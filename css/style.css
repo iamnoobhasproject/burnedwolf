@@ -38,9 +38,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ===========================================================
-   GLOBAL BACKGROUND EFFECTS
-   =========================================================== */
+/* BACKGROUND DECOR */
 
 .bg-grid {
   position: fixed;
@@ -77,9 +75,7 @@ body {
   bottom: -150px; left: -100px;
 }
 
-/* ===========================================================
-   SCROLLBAR
-   =========================================================== */
+/* SCROLLBAR */
 
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-2); }
@@ -89,18 +85,12 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-/* ===========================================================
-   SELECTION
-   =========================================================== */
-
 ::selection {
   background: rgba(168, 85, 247, 0.35);
   color: #fff;
 }
 
-/* ===========================================================
-   LANGUAGE SELECTOR (LANDING)
-   =========================================================== */
+/* LANGUAGE SELECTOR (LANDING) */
 
 .lang-overlay {
   position: fixed;
@@ -251,9 +241,7 @@ body {
   box-shadow: none;
 }
 
-/* ===========================================================
-   NAVIGATION BAR
-   =========================================================== */
+/* NAV */
 
 .nav {
   position: fixed;
@@ -415,9 +403,7 @@ body {
   border-radius: 12px;
 }
 
-/* ===========================================================
-   HERO
-   =========================================================== */
+/* HERO */
 
 .hero {
   position: relative;
@@ -527,9 +513,7 @@ body {
   border-radius: 50%;
 }
 
-/* ===========================================================
-   STATS BAR
-   =========================================================== */
+/* STATS */
 
 .stats {
   position: relative;
@@ -547,9 +531,7 @@ body {
   border-radius: 16px;
   padding: 32px;
 }
-.stat {
-  text-align: center;
-}
+.stat { text-align: center; }
 .stat .num {
   font-size: clamp(1.8rem, 3vw, 2.6rem);
   font-weight: 800;
@@ -569,9 +551,7 @@ body {
   font-weight: 600;
 }
 
-/* ===========================================================
-   SECTIONS
-   =========================================================== */
+/* SECTIONS */
 
 .section {
   position: relative;
@@ -599,9 +579,7 @@ body {
   line-height: 1.65;
 }
 
-/* ===========================================================
-   FEATURES
-   =========================================================== */
+/* FEATURES */
 
 .features-grid {
   display: grid;
@@ -662,9 +640,7 @@ body {
   position: relative;
 }
 
-/* ===========================================================
-   MODULES
-   =========================================================== */
+/* MODULES */
 
 .modules-stack {
   display: grid;
@@ -768,9 +744,7 @@ body {
   border: 1.5px solid var(--primary);
 }
 
-/* ===========================================================
-   HOW TO USE
-   =========================================================== */
+/* HOW TO USE */
 
 .steps-grid {
   display: grid;
@@ -826,9 +800,7 @@ body {
   line-height: 1.6;
 }
 
-/* ===========================================================
-   DOWNLOAD SECTION
-   =========================================================== */
+/* DOWNLOAD SECTION */
 
 .download-section {
   position: relative;
@@ -881,6 +853,22 @@ body {
   line-height: 1.65;
 }
 
+/* Download primary (the big main CTA, solo on its row) */
+.download-primary {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+/* Download secondary (Source Code + Update Repo, side by side) */
+.download-secondary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .download-btn {
   display: inline-flex;
   align-items: center;
@@ -905,6 +893,37 @@ body {
               inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 .download-btn svg { width: 22px; height: 22px; }
+
+/* Secondary outline buttons (Source Code, Update Repo) */
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 24px;
+  background: var(--surface);
+  color: var(--text-main);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  border-radius: 14px;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  letter-spacing: 0.2px;
+  transition: all 0.25s var(--ease);
+  position: relative;
+}
+.btn-outline:hover {
+  background: rgba(168, 85, 247, 0.08);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(168, 85, 247, 0.2);
+}
+.btn-outline svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
 
 .download-note {
   margin-top: 24px;
@@ -932,9 +951,7 @@ body {
 }
 .download-meta .item svg { color: var(--success); }
 
-/* ===========================================================
-   FAQ
-   =========================================================== */
+/* FAQ */
 
 .faq-list {
   max-width: 820px;
@@ -993,9 +1010,7 @@ body {
   padding: 0 24px 22px;
 }
 
-/* ===========================================================
-   FINAL CTA
-   =========================================================== */
+/* FINAL CTA */
 
 .cta {
   text-align: center;
@@ -1024,9 +1039,7 @@ body {
   line-height: 1.65;
 }
 
-/* ===========================================================
-   FOOTER
-   =========================================================== */
+/* FOOTER */
 
 .footer {
   position: relative;
@@ -1098,9 +1111,7 @@ body {
   color: var(--text-faint);
 }
 
-/* ===========================================================
-   REVEAL ANIMATIONS
-   =========================================================== */
+/* REVEAL */
 
 .reveal {
   opacity: 0;
@@ -1112,9 +1123,7 @@ body {
   transform: translateY(0);
 }
 
-/* ===========================================================
-   KEYFRAMES
-   =========================================================== */
+/* KEYFRAMES */
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -1137,9 +1146,7 @@ body {
   50% { box-shadow: 0 0 14px rgba(168, 85, 247, 0.6); }
 }
 
-/* ===========================================================
-   RESPONSIVE
-   =========================================================== */
+/* RESPONSIVE */
 
 @media (max-width: 920px) {
   .nav-links { display: none; }
@@ -1156,6 +1163,9 @@ body {
   .download-section { padding: 70px 20px; }
   .download-card { padding: 44px 24px; }
   .cta { padding: 70px 20px 60px; }
+  .download-secondary { flex-direction: column; align-items: stretch; }
+  .download-btn { justify-content: center; }
+  .btn-outline { justify-content: center; }
 }
 
 @media (max-width: 520px) {

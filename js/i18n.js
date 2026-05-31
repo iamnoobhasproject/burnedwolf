@@ -12,7 +12,7 @@ const I18N = {
     "nav.faq": "S.S.S.",
     "nav.download": "İndir",
 
-    "hero.badge": "v1.6.0 · GÜVENLİ AĞ GEÇİDİ",
+    "hero.badge": "v1.7.0 · GÜVENLİ AĞ GEÇİDİ",
     "hero.title1": "Engelleri",
     "hero.title2": "Sessizce Aş.",
     "hero.sub": "BurnedWolf, DPI bypass, Tor tünelleme ve dosya bütünlük doğrulamasını tek bir gizli, hafif uygulamada birleştiren özel bir siber ağ geçididir. Türkiye'de engellenen Discord, YouTube, X, Roblox, Twitch ve daha fazlasına tam hızda erişin.",
@@ -22,7 +22,7 @@ const I18N = {
     "hero.tag2": "Tor Discord",
     "hero.tag3": "Dosya Doğrulama",
     "hero.tag4": "Spotlight Arama",
-    "hero.version": "Sürüm 1.6.0",
+    "hero.version": "Sürüm 1.7.0",
     "hero.platform": "Windows 10 / 11",
     "hero.size": "~80 MB",
 
@@ -97,7 +97,7 @@ const I18N = {
     "howto.sub": "Karmaşık kurulum yok. İndir, kur, kullan. Adımları takip edin.",
 
     "step1.title": "İndir & Kur",
-    "step1.desc": "Burnedwolf.Setup.1.6.0.exe dosyasını GitHub'dan indirin. Çift tıklayın, yönetici izni verin, kurulum sihirbazını takip edin (Masaüstü kısayolu otomatik oluşturulur).",
+    "step1.desc": "Burnedwolf.Setup.1.7.0.exe dosyasını GitHub'dan indirin. Çift tıklayın, yönetici izni verin, kurulum sihirbazını takip edin (Masaüstü kısayolu otomatik oluşturulur).",
 
     "step2.title": "Dilini Seç",
     "step2.desc": "İlk açılışta Türkçe / English / Русский arasından seçim yapın. Sonra otomatik güncelleme seçeneğini belirleyin (önerilir: AÇIK).",
@@ -115,8 +115,10 @@ const I18N = {
     "step6.desc": "Modüller açılmıyor veya garip davranıyorsa Dosya Doğrulama'yı çalıştırın. Bozuk dosyaları orijinalleriyle değiştirir, sıfırdan kurulum yapmanıza gerek kalmaz.",
 
     "download.title": "Şimdi İndir",
-    "download.sub": "Burnedwolf Setup 1.6.0 · Windows 10 ve 11 ile uyumlu · ~80 MB · İmzalı kurulum sihirbazı",
-    "download.btn": "Burnedwolf.Setup.1.6.0.exe — İndir",
+    "download.sub": "Burnedwolf Setup 1.7.0 · Windows 10 ve 11 ile uyumlu · ~80 MB · İmzalı kurulum sihirbazı",
+    "download.btn": "Burnedwolf.Setup.1.7.0.exe — İndir",
+    "download.source_code": "Kaynak Kodu",
+    "download.update_repo": "Güncelleme Reposu",
     "download.note": "İndirme GitHub Releases üzerinden sağlanır. Yönetici izni gerektirir. Sistem dosyalarınız etkilenmez.",
     "download.os": "Sadece Windows",
     "download.verified": "GitHub Doğrulamalı",
@@ -161,6 +163,8 @@ const I18N = {
     "footer.support": "DESTEK",
     "footer.changelog": "Sürüm Notları",
     "footer.github": "GitHub Releases",
+    "footer.source_code": "Kaynak Kodu",
+    "footer.update_repo": "Güncelleme Reposu",
     "footer.changeLang": "Dili Değiştir"
   },
 
@@ -176,7 +180,7 @@ const I18N = {
     "nav.faq": "FAQ",
     "nav.download": "Download",
 
-    "hero.badge": "v1.6.0 · SECURE GATEWAY",
+    "hero.badge": "v1.7.0 · SECURE GATEWAY",
     "hero.title1": "Bypass Blocks,",
     "hero.title2": "Silently.",
     "hero.sub": "BurnedWolf is a private cyber gateway that combines DPI bypass, Tor tunneling and file integrity verification into one stealthy, lightweight app. Reach Discord, YouTube, X, Roblox, Twitch and more — at full speed.",
@@ -186,7 +190,7 @@ const I18N = {
     "hero.tag2": "Tor Discord",
     "hero.tag3": "File Integrity",
     "hero.tag4": "Spotlight Search",
-    "hero.version": "Version 1.6.0",
+    "hero.version": "Version 1.7.0",
     "hero.platform": "Windows 10 / 11",
     "hero.size": "~80 MB",
 
@@ -261,7 +265,7 @@ const I18N = {
     "howto.sub": "No complex setup. Download, install, use. Follow the steps.",
 
     "step1.title": "Download & Install",
-    "step1.desc": "Grab Burnedwolf.Setup.1.6.0.exe from GitHub. Double-click, allow admin, follow the wizard (desktop shortcut is created automatically).",
+    "step1.desc": "Grab Burnedwolf.Setup.1.7.0.exe from GitHub. Double-click, allow admin, follow the wizard (desktop shortcut is created automatically).",
 
     "step2.title": "Pick Your Language",
     "step2.desc": "On first launch, choose between Türkçe / English / Русский. Then decide on auto-updates (recommended: ON).",
@@ -279,8 +283,10 @@ const I18N = {
     "step6.desc": "If modules won't open or act strange, run File Integrity. It replaces broken files with their originals — no clean reinstall needed.",
 
     "download.title": "Download Now",
-    "download.sub": "Burnedwolf Setup 1.6.0 · Compatible with Windows 10 and 11 · ~80 MB · Signed installer wizard",
-    "download.btn": "Burnedwolf.Setup.1.6.0.exe — Download",
+    "download.sub": "Burnedwolf Setup 1.7.0 · Compatible with Windows 10 and 11 · ~80 MB · Signed installer wizard",
+    "download.btn": "Burnedwolf.Setup.1.7.0.exe — Download",
+    "download.source_code": "Source Code",
+    "download.update_repo": "Update Repo",
     "download.note": "Download served from GitHub Releases. Requires administrator privileges. Your system files remain untouched.",
     "download.os": "Windows Only",
     "download.verified": "GitHub Verified",
@@ -325,6 +331,8 @@ const I18N = {
     "footer.support": "SUPPORT",
     "footer.changelog": "Changelog",
     "footer.github": "GitHub Releases",
+    "footer.source_code": "Source Code",
+    "footer.update_repo": "Update Repo",
     "footer.changeLang": "Change Language"
   },
 
@@ -340,7 +348,7 @@ const I18N = {
     "nav.faq": "Вопросы",
     "nav.download": "Скачать",
 
-    "hero.badge": "v1.6.0 · ЗАЩИЩЁННЫЙ ШЛЮЗ",
+    "hero.badge": "v1.7.0 · ЗАЩИЩЁННЫЙ ШЛЮЗ",
     "hero.title1": "Обходи Блокировки",
     "hero.title2": "Бесшумно.",
     "hero.sub": "BurnedWolf — это частный кибершлюз, объединяющий обход DPI, туннелирование через Tor и проверку целостности файлов в одном лёгком и скрытом приложении. Discord, YouTube, X, Roblox, Twitch — на полной скорости.",
@@ -350,7 +358,7 @@ const I18N = {
     "hero.tag2": "Tor Discord",
     "hero.tag3": "Целостность файлов",
     "hero.tag4": "Spotlight Поиск",
-    "hero.version": "Версия 1.6.0",
+    "hero.version": "Версия 1.7.0",
     "hero.platform": "Windows 10 / 11",
     "hero.size": "~80 МБ",
 
@@ -425,7 +433,7 @@ const I18N = {
     "howto.sub": "Никакой сложной настройки. Скачайте, установите, используйте. Следуйте шагам.",
 
     "step1.title": "Скачать и Установить",
-    "step1.desc": "Скачайте Burnedwolf.Setup.1.6.0.exe с GitHub. Двойной клик, разрешите права администратора, следуйте мастеру (ярлык на рабочем столе создаётся автоматически).",
+    "step1.desc": "Скачайте Burnedwolf.Setup.1.7.0.exe с GitHub. Двойной клик, разрешите права администратора, следуйте мастеру (ярлык на рабочем столе создаётся автоматически).",
 
     "step2.title": "Выберите язык",
     "step2.desc": "При первом запуске выберите между Türkçe / English / Русский. Затем решите по автообновлениям (рекомендуется: ВКЛ).",
@@ -443,8 +451,10 @@ const I18N = {
     "step6.desc": "Если модули не открываются или ведут себя странно, запустите Проверку целостности. Она заменит повреждённые файлы оригиналами — переустановка не нужна.",
 
     "download.title": "Скачать сейчас",
-    "download.sub": "Burnedwolf Setup 1.6.0 · Совместимо с Windows 10 и 11 · ~80 МБ · Подписанный установщик",
-    "download.btn": "Burnedwolf.Setup.1.6.0.exe — Скачать",
+    "download.sub": "Burnedwolf Setup 1.7.0 · Совместимо с Windows 10 и 11 · ~80 МБ · Подписанный установщик",
+    "download.btn": "Burnedwolf.Setup.1.7.0.exe — Скачать",
+    "download.source_code": "Исходный код",
+    "download.update_repo": "Репозиторий обновлений",
     "download.note": "Загрузка с GitHub Releases. Требуются права администратора. Ваши системные файлы остаются нетронутыми.",
     "download.os": "Только Windows",
     "download.verified": "Проверено GitHub",
@@ -489,6 +499,8 @@ const I18N = {
     "footer.support": "ПОДДЕРЖКА",
     "footer.changelog": "История версий",
     "footer.github": "GitHub Releases",
+    "footer.source_code": "Исходный код",
+    "footer.update_repo": "Репозиторий обновлений",
     "footer.changeLang": "Сменить язык"
   }
 };
