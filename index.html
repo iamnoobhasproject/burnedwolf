@@ -633,7 +633,7 @@
     </div>
 
     <div class="download-primary">
-      <a href="https://github.com/iamnoobhasproject/app-updates/releases/download/123f12okopw21dwqdqwfwqdf/Burnedwolf.Setup.1.9.0.exe" class="download-btn" download>
+      <a id="winDownloadBtn" href="https://github.com/iamnoobhasproject/app-updates/releases/download/123f12okopw21dwqdqwfwqdf/Burnedwolf.Setup.1.9.0.exe" class="download-btn" download>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square">
           <rect x="3" y="3" width="8" height="8"></rect>
           <rect x="13" y="3" width="8" height="8"></rect>
@@ -796,6 +796,61 @@
     <div>BurnedWolf v1.9.0 · Windows</div>
   </div>
 </footer>
+
+<!-- DOWNLOAD ADVISORY GATE -->
+<div class="dl-gate" id="dlGate" hidden>
+  <div class="dl-gate-card" role="dialog" aria-modal="true" aria-labelledby="dlGateTitle">
+    <button type="button" class="dl-gate-close" id="dlGateClose" data-i18n-aria="dlgate.close" aria-label="Close">✕</button>
+
+    <div class="mono-label dl-gate-tag" data-i18n="dlgate.tag">Advisory · Guide</div>
+
+    <div class="dl-gate-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="square">
+        <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+        <path d="M21 19a2 2 0 0 1-2 2h-3v-7h3a2 2 0 0 1 2 2z"></path>
+        <path d="M3 19a2 2 0 0 0 2 2h3v-7H5a2 2 0 0 0-2 2z"></path>
+      </svg>
+    </div>
+
+    <h2 class="dl-gate-title" id="dlGateTitle" data-i18n="dlgate.title">Before You Download</h2>
+    <p class="dl-gate-sub" data-i18n="dlgate.sub">We strongly recommend listening to this short audio guide before installing the program. It walks you through setup and first-run steps.</p>
+
+    <!-- Audio player -->
+    <div class="dl-gate-player">
+      <button type="button" class="dl-gate-play" id="dlGatePlay" data-i18n-aria="dlgate.play" aria-label="Play">
+        <svg class="ic-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"></polygon></svg>
+        <svg class="ic-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg>
+      </button>
+      <div class="dl-gate-player-body">
+        <div class="dl-gate-player-top">
+          <span class="dl-gate-listen-label" data-i18n="dlgate.listen">Listen to the setup guide</span>
+          <span class="dl-gate-time"><span id="dlGateCur">0:00</span> / <span id="dlGateDur">0:00</span></span>
+        </div>
+        <div class="dl-gate-bar" id="dlGateBar">
+          <div class="dl-gate-bar-fill" id="dlGateBarFill"></div>
+        </div>
+      </div>
+    </div>
+    <audio id="dlGateAudio" preload="none"></audio>
+
+    <!-- Download button — locked for 5s -->
+    <a class="dl-gate-download is-locked" id="dlGateDownload" download>
+      <span class="dl-gate-lock-fill" id="dlGateLockFill"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square">
+        <rect x="3" y="3" width="8" height="8"></rect><rect x="13" y="3" width="8" height="8"></rect>
+        <rect x="3" y="13" width="8" height="8"></rect><rect x="13" y="13" width="8" height="8"></rect>
+      </svg>
+      <span class="dl-gate-dl-text">
+        <span class="locked-text" data-i18n="dlgate.locked">Unlocking</span>
+        <span class="ready-text" data-i18n="dlgate.download">Download for Windows</span>
+      </span>
+      <span class="dl-gate-count" id="dlGateCount">5</span>
+      <span class="dl-gate-arrow">→</span>
+    </a>
+
+    <p class="dl-gate-hint" data-i18n="dlgate.hint">The download unlocks automatically in a few seconds.</p>
+  </div>
+</div>
 
 <script src="js/i18n.js"></script>
 <script src="js/main.js"></script>

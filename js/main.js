@@ -250,6 +250,139 @@
   }
 
   /* ---------------------------------------------------------
+     DOWNLOAD ADVISORY GATE
+     --------------------------------------------------------- */
+
+  function setupDownloadGate() {
+    const trigger = document.getElementById('winDownloadBtn');
+    const gate = document.getElementById('dlGate');
+    if (!trigger || !gate) return;
+
+    const card = gate.querySelector('.dl-gate-card');
+    const closeBtn = document.getElementById('dlGateClose');
+    const playBtn = document.getElementById('dlGatePlay');
+    const audio = document.getElementById('dlGateAudio');
+    const bar = document.getElementById('dlGateBar');
+    const barFill = document.getElementById('dlGateBarFill');
+    const curEl = document.getElementById('dlGateCur');
+    const durEl = document.getElementById('dlGateDur');
+    const dl = document.getElementById('dlGateDownload');
+    const lockFill = document.getElementById('dlGateLockFill');
+    const countEl = document.getElementById('dlGateCount');
+
+    const AUDIO_BY_LANG = { tr: 'listenTR.mp3', en: 'listenEN.mp3', ru: 'listenRU.mp3' };
+    const LOCK_SECONDS = 5;
+    let lockInterval = null;
+    let lockTimeout = null;
+
+    const fmt = (s) => {
+      if (!isFinite(s) || s < 0) return '0:00';
+      s = Math.floor(s);
+      return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    };
+
+    const setPlaying = (playing) => {
+      playBtn.classList.toggle('playing', playing);
+      playBtn.setAttribute('aria-label', tr(playing ? 'dlgate.pause' : 'dlgate.play'));
+    };
+
+    /* --- lock countdown --- */
+    function clearLock() {
+      clearInterval(lockInterval);
+      clearTimeout(lockTimeout);
+      lockInterval = null;
+      lockTimeout = null;
+    }
+    function startLock() {
+      clearLock();
+      dl.classList.add('is-locked');
+      let remaining = LOCK_SECONDS;
+      countEl.textContent = remaining;
+
+      lockFill.style.transition = 'none';
+      lockFill.style.width = '0%';
+      void lockFill.offsetWidth;            // force reflow so the fill animates from 0
+      lockFill.style.transition = 'width ' + LOCK_SECONDS + 's linear';
+      lockFill.style.width = '100%';
+
+      lockInterval = setInterval(() => {
+        remaining = Math.max(0, remaining - 1);
+        countEl.textContent = remaining;
+      }, 1000);
+      lockTimeout = setTimeout(() => {
+        clearInterval(lockInterval);
+        dl.classList.remove('is-locked');
+      }, LOCK_SECONDS * 1000);
+    }
+
+    /* --- open / close --- */
+    function openGate() {
+      const lang = document.documentElement.getAttribute('data-lang') || 'en';
+      const file = AUDIO_BY_LANG[lang] || AUDIO_BY_LANG.en;
+      const abs = new URL(file, location.href).href;
+      if (audio.src !== abs) audio.src = file;
+
+      dl.setAttribute('href', trigger.getAttribute('href'));
+
+      audio.pause();
+      audio.currentTime = 0;
+      setPlaying(false);
+      barFill.style.width = '0%';
+      curEl.textContent = '0:00';
+      durEl.textContent = fmt(audio.duration);
+
+      gate.hidden = false;
+      document.body.style.overflow = 'hidden';
+      startLock();
+      closeBtn.focus();
+    }
+    function closeGate() {
+      audio.pause();
+      setPlaying(false);
+      clearLock();
+      gate.hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    /* --- wiring --- */
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGate();
+    });
+    closeBtn.addEventListener('click', closeGate);
+    gate.addEventListener('click', (e) => { if (e.target === gate) closeGate(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !gate.hidden) closeGate();
+    });
+
+    dl.addEventListener('click', (e) => {
+      if (dl.classList.contains('is-locked')) { e.preventDefault(); return; }
+      setTimeout(closeGate, 500);   // let the browser kick off the download first
+    });
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) audio.play().catch(() => {});
+      else audio.pause();
+    });
+    audio.addEventListener('play', () => setPlaying(true));
+    audio.addEventListener('pause', () => setPlaying(false));
+    audio.addEventListener('ended', () => { setPlaying(false); });
+    audio.addEventListener('loadedmetadata', () => { durEl.textContent = fmt(audio.duration); });
+    audio.addEventListener('timeupdate', () => {
+      curEl.textContent = fmt(audio.currentTime);
+      const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+      barFill.style.width = pct + '%';
+    });
+
+    bar.addEventListener('click', (e) => {
+      if (!audio.duration) return;
+      const rect = bar.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      audio.currentTime = pct * audio.duration;
+    });
+  }
+
+  /* ---------------------------------------------------------
      BOOT
      --------------------------------------------------------- */
 
@@ -261,5 +394,6 @@
     setupFaq();
     setupAnchors();
     setupCounters();
+    setupDownloadGate();
   });
 })();

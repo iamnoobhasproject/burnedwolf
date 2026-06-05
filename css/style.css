@@ -1714,3 +1714,236 @@ h1, h2, h3, h4,
   .download-spec .cell { border-right: 0 !important; border-bottom: 1px solid var(--line); }
   .download-spec .cell:last-child { border-bottom: 0; }
 }
+
+/* ===========================================================
+   DOWNLOAD ADVISORY GATE
+   =========================================================== */
+
+.dl-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px;
+  background: rgba(6, 6, 6, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fadeIn 0.3s var(--ease);
+}
+.dl-gate[hidden] { display: none; }
+
+.dl-gate-card {
+  position: relative;
+  z-index: 1;
+  margin: auto;
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface);
+  border: 1px solid var(--fire);
+  padding: 40px 34px 30px;
+  text-align: center;
+  animation: slideUp 0.4s var(--ease);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--bg);
+}
+.dl-gate-card::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 8px; right: 8px; bottom: 8px;
+  border: 1px dashed var(--line-2);
+  pointer-events: none;
+}
+
+.dl-gate-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1px solid var(--line-2);
+  color: var(--ink-3);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.18s var(--tap);
+  z-index: 3;
+}
+.dl-gate-close:hover { border-color: var(--fire); color: var(--fire); }
+
+.dl-gate-tag { color: var(--fire); margin-bottom: 20px; }
+
+.dl-gate-icon {
+  width: 60px; height: 60px;
+  margin: 0 auto 18px;
+  border: 1.5px solid var(--fire);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--fire);
+  background: rgba(168, 85, 247, 0.07);
+}
+.dl-gate-icon svg { width: 28px; height: 28px; }
+
+.dl-gate-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+.dl-gate-sub {
+  font-size: 0.84rem;
+  color: var(--ink-3);
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto 26px;
+}
+
+/* Audio player */
+.dl-gate-player {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  margin-bottom: 16px;
+  text-align: left;
+}
+.dl-gate-play {
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--fire);
+  color: var(--bg);
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s var(--tap);
+}
+.dl-gate-play:hover { background: var(--fire-hot); }
+.dl-gate-play svg { width: 18px; height: 18px; }
+.dl-gate-play .ic-pause { display: none; }
+.dl-gate-play.playing .ic-play { display: none; }
+.dl-gate-play.playing .ic-pause { display: block; }
+
+.dl-gate-player-body { flex: 1; min-width: 0; }
+.dl-gate-player-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+.dl-gate-listen-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dl-gate-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--ink-3);
+  flex-shrink: 0;
+}
+.dl-gate-bar {
+  position: relative;
+  height: 6px;
+  background: var(--surface-3);
+  cursor: pointer;
+  overflow: hidden;
+}
+.dl-gate-bar-fill {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 0%;
+  background: var(--fire);
+  transition: width 0.1s linear;
+}
+
+/* Download button — locked then unlocked */
+.dl-gate-download {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 18px 22px;
+  background: var(--fire);
+  color: var(--bg);
+  text-decoration: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 0.86rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--fire);
+  overflow: hidden;
+  transition: background 0.18s var(--tap);
+}
+.dl-gate-download:hover { background: var(--fire-hot); }
+.dl-gate-download svg {
+  width: 20px; height: 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+.dl-gate-dl-text { position: relative; z-index: 2; }
+.dl-gate-dl-text .locked-text { display: none; }
+.dl-gate-arrow {
+  margin-left: auto;
+  position: relative;
+  z-index: 2;
+}
+.dl-gate-count {
+  margin-left: auto;
+  position: relative;
+  z-index: 2;
+  min-width: 26px; height: 26px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+.dl-gate-lock-fill {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 0%;
+  background: rgba(168, 85, 247, 0.20);
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Locked state */
+.dl-gate-download.is-locked {
+  background: var(--surface-2);
+  color: var(--ink-3);
+  border-color: var(--line-2);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.dl-gate-download.is-locked .locked-text { display: inline; }
+.dl-gate-download.is-locked .ready-text { display: none; }
+.dl-gate-download.is-locked .dl-gate-arrow { display: none; }
+.dl-gate-download.is-locked .dl-gate-count { display: inline-flex; }
+.dl-gate-download.is-locked .dl-gate-lock-fill { opacity: 1; }
+
+.dl-gate-hint {
+  margin-top: 14px;
+  font-size: 0.72rem;
+  color: var(--ink-4);
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 560px) {
+  .dl-gate-card { padding: 34px 20px 24px; }
+  .dl-gate-title { font-size: 1.3rem; }
+  .dl-gate-sub { font-size: 0.8rem; }
+  .dl-gate-download { padding: 16px 18px; font-size: 0.78rem; }
+}
