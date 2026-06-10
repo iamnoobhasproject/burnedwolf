@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://iamnoobhasproject.github.io/burnedwolf/sitemap.xml
