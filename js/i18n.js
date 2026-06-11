@@ -1,5 +1,5 @@
 /* BurnedWolf Website - Multi-language dictionary (TR / EN / RU)
-   Schematic / Industrial theme — v2.1.0
+   Schematic / Industrial theme — v2.2.0
 */
 
 const I18N = {
@@ -18,7 +18,7 @@ const I18N = {
     "nav.faq": "S.S.S.",
     "nav.download": "İndir",
 
-    "hero.tag": "v2.1.0 · Gizlilik Araç Takımı",
+    "hero.tag": "v2.2.0 · Gizlilik Araç Takımı",
     "hero.status": "Sistemler Aktif",
     "hero.cat": "Tür: Gizlilik · DNS · Bütünlük",
     "hero.os": "Platform: Windows",
@@ -111,7 +111,7 @@ const I18N = {
     "howto.sub": "Karmaşık kurulum yok. İndir, kur, kullan. Adımları takip et.",
 
     "step1.title": "İndir & Kur",
-    "step1.desc": "Burnedwolf.Setup.2.1.0.exe dosyasını GitHub'dan indir. Çift tıkla, yönetici izni ver, sihirbazı takip et.",
+    "step1.desc": "Burnedwolf.Setup.2.2.0.exe dosyasını GitHub'dan indir. Çift tıkla, yönetici izni ver, sihirbazı takip et.",
     "step2.title": "Dilini Seç",
     "step2.desc": "İlk açılışta Türkçe / English / Русский arasından seç. Sonra otomatik güncelleme seçeneğini belirle.",
     "step3.title": "Her Şey Tek Ekranda",
@@ -127,6 +127,11 @@ const I18N = {
     "changelog.title": "Geliştirme Günlüğü",
     "changelog.sub": "Her sürümün getirdikleri. Aktif geliştirme — her ay yeni iyileştirme.",
     "changelog.latest": "Şu Anki Sürüm",
+
+    "cl220.title": "Discord ve Dosya Doğrulama birleştirildi",
+    "cl220.i1": "Discord ve Dosya Doğrulama artık ana pencerede açılıyor — ayrı pencere kalmadı; uygulama baştan sona tek pencere",
+    "cl220.i2": "Pencere Discord görünümüne göre büyüyor, 'Programa dön' butonuyla panele geri dönülüyor",
+    "cl220.i3": "Onboarding, güncelleyici ve kapanış ekranları ana amber temayla aynı görünüme getirildi",
 
     "cl210.title": "Tek pencere yeniden tasarımı",
     "cl210.i1": "Her şey artık tek ekranda — DPI kontrolü, şifreli DNS ve ağ analizi; ayrı modül pencereleri yok",
@@ -256,7 +261,7 @@ const I18N = {
     "nav.faq": "FAQ",
     "nav.download": "Download",
 
-    "hero.tag": "v2.1.0 · Private Network Toolkit",
+    "hero.tag": "v2.2.0 · Private Network Toolkit",
     "hero.status": "Systems Online",
     "hero.cat": "Type: Privacy · DNS · Integrity",
     "hero.os": "Platform: Windows",
@@ -349,7 +354,7 @@ const I18N = {
     "howto.sub": "No complex setup. Download, install, use. Follow the steps.",
 
     "step1.title": "Download & Install",
-    "step1.desc": "Grab Burnedwolf.Setup.2.1.0.exe from GitHub. Double-click, allow admin, follow the wizard.",
+    "step1.desc": "Grab Burnedwolf.Setup.2.2.0.exe from GitHub. Double-click, allow admin, follow the wizard.",
     "step2.title": "Pick Your Language",
     "step2.desc": "On first launch, choose Türkçe / English / Русский. Then decide on auto-updates.",
     "step3.title": "Everything On One Screen",
@@ -365,6 +370,11 @@ const I18N = {
     "changelog.title": "Build Log",
     "changelog.sub": "What every release brought. Active development — new improvements every month.",
     "changelog.latest": "Current Build",
+
+    "cl220.title": "Discord & File Integrity unified",
+    "cl220.i1": "Discord and File Integrity now open inside the main window too — no more separate windows; the app is a single window end to end",
+    "cl220.i2": "The window grows to fit the Discord view, with a 'Back to app' button to return to the dashboard",
+    "cl220.i3": "Onboarding, updater and shutdown screens restyled to match the main amber theme",
 
     "cl210.title": "Single-window redesign",
     "cl210.i1": "Everything now lives on one screen — DPI control, encrypted DNS and network analysis; no more separate module windows",
@@ -494,7 +504,7 @@ const I18N = {
     "nav.faq": "Вопросы",
     "nav.download": "Скачать",
 
-    "hero.tag": "v2.1.0 · Набор для приватности",
+    "hero.tag": "v2.2.0 · Набор для приватности",
     "hero.status": "Системы онлайн",
     "hero.cat": "Тип: Приватность · DNS · Целостность",
     "hero.os": "Платформа: Windows",
@@ -587,7 +597,7 @@ const I18N = {
     "howto.sub": "Никакой сложной настройки. Скачайте, установите, используйте.",
 
     "step1.title": "Скачать и Установить",
-    "step1.desc": "Скачайте Burnedwolf.Setup.2.1.0.exe с GitHub. Двойной клик, разрешите права администратора, следуйте мастеру.",
+    "step1.desc": "Скачайте Burnedwolf.Setup.2.2.0.exe с GitHub. Двойной клик, разрешите права администратора, следуйте мастеру.",
     "step2.title": "Выберите язык",
     "step2.desc": "При первом запуске выберите Türkçe / English / Русский. Затем решите по автообновлениям.",
     "step3.title": "Всё на одном экране",
@@ -603,6 +613,11 @@ const I18N = {
     "changelog.title": "Журнал сборок",
     "changelog.sub": "Что принёс каждый релиз. Активная разработка — улучшения каждый месяц.",
     "changelog.latest": "Текущая сборка",
+
+    "cl220.title": "Discord и Целостность файлов объединены",
+    "cl220.i1": "Discord и Целостность файлов теперь открываются внутри главного окна — отдельных окон больше нет; приложение целиком в одном окне",
+    "cl220.i2": "Окно расширяется под вид Discord, кнопка «Назад в приложение» возвращает на панель",
+    "cl220.i3": "Экраны онбординга, обновления и выхода приведены к единой янтарной теме",
 
     "cl210.title": "Редизайн в одно окно",
     "cl210.i1": "Теперь всё на одном экране — управление DPI, шифрованный DNS и анализ сети; без отдельных окон модулей",

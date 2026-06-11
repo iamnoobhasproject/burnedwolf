@@ -1,5 +1,5 @@
 /* BurnedWolf Website - Runtime
-   Schematic / Industrial theme — v2.0.0
+   Schematic / Industrial theme — v2.2.0
 */
 
 (function () {
