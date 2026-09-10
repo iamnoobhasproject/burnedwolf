@@ -3,6 +3,7 @@
   "version": "4.6.0",
   "description": "BurnedWolf network utility with integrated BurnedCord by whyscripts.com",
   "author": "whyscripts.com / github.com/iamnoobhasproject",
+  "license": "MIT",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

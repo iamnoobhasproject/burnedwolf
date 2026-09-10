@@ -10,7 +10,7 @@ Built and maintained under **[whyscripts.com](https://whyscripts.com/)**.
 [![Version](https://img.shields.io/github/package-json/v/iamnoobhasproject/burnedwolf?filename=package.json&style=flat-square)](package.json)
 [![Platform](https://img.shields.io/badge/platform-Windows-111111?style=flat-square&logo=windows11&logoColor=white)](#requirements)
 [![Electron](https://img.shields.io/badge/Electron-26-111111?style=flat-square&logo=electron&logoColor=white)](package.json)
-[![Source](https://img.shields.io/badge/source-public-111111?style=flat-square&logo=github&logoColor=white)](https://github.com/iamnoobhasproject/burnedwolf)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 [Website](https://burnedwolf.whyscripts.com/) · [Report a bug](https://github.com/iamnoobhasproject/burnedwolf/issues) · [WhyScripts](https://whyscripts.com/)
 </div>
@@ -149,13 +149,25 @@ Please keep changes scoped, avoid committing secrets or generated runtime bundle
 
 ## Third-party components
 
-BurnedWolf integrates or interoperates with third-party open-source components, including Electron, Zapret/WinDivert-based networking components, dnscrypt-proxy, and Tor. Those projects retain their own licenses, trademarks, and notices.
+BurnedWolf uses and/or distributes third-party open-source components. These components are **not relicensed under BurnedWolf's MIT License** and remain subject to their own licenses and copyright notices.
+
+Notable components include:
+
+- **Zapret** — MIT License
+- **dnscrypt-proxy** — ISC License
+- **WinDivert** — LGPLv3 or GPLv2, at the recipient's choice
+- **Tor** — distributed under the Tor Project's applicable license terms
+- **Electron and npm dependencies** — subject to their respective upstream licenses
+
+See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and the license files shipped with third-party runtime components for details.
 
 ## License
 
-This repository does **not currently declare a project license**. Publicly visible source code is not automatically the same thing as granting an open-source license. Until a license is added, no additional permissions should be assumed beyond those required by applicable law.
+BurnedWolf's **original source code** is licensed under the [MIT License](LICENSE).
 
-Third-party components remain subject to their respective licenses.
+Copyright © 2026 **iamnoobhasproject**.
+
+This license applies only to code and other material for which the BurnedWolf copyright holder has the right to grant a license. Third-party components bundled with or used by BurnedWolf retain their own licenses, copyright notices, and redistribution requirements.
 
 ## Links
 
