@@ -112,6 +112,15 @@ Network utilities can leave the system in a bad state if they are terminated at 
 
 If something goes wrong, read [Troubleshooting](docs/TROUBLESHOOTING.md) before manually changing system settings.
 
+## Project history
+
+BurnedWolf has been actively developed through approximately 370 development
+iterations and updates. Earlier versions of the project were hosted in
+repositories that are no longer available, so the commit history of this
+repository does not represent the full development history of BurnedWolf.
+
+The current repository is the maintained public source going forward.
+
 ## Updates
 
 Public distribution endpoints are centralized in `src/main/distribution.js`. The current application checks the WhyScripts update channel for a newer semantic version and downloads the corresponding application update package.
