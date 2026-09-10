@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8"/>
 <title>BurnedWolf</title>
-<link rel="stylesheet" href="weave.css">
+<link href="weave.css" rel="stylesheet"/>
 <style>
 /* ==========================================================================
    MAIN WINDOW — band composition
@@ -177,7 +178,6 @@ body { display: flex; }
 .rank .rm .n2 { color: var(--bad-lit); }
 
 /* ---------- DISCORD ---------- */
-#discordView { min-height: 0; }
 .gate { flex: 1; display: flex; align-items: center; justify-content: center; padding: var(--s6); min-height: 0; overflow-y: auto; }
 .gate-box { width: 100%; max-width: 380px; border: 1px solid var(--selvedge-2); background: var(--ground-2); padding: var(--s6); }
 .gate-box h3 { font-family: var(--display); font-size: 21px; letter-spacing: .05em; text-transform: uppercase; margin-bottom: var(--s2); }
@@ -189,13 +189,8 @@ body { display: flex; }
 .saved strong { font-size: 14px; }
 #dLoader { display: none; align-items: center; gap: var(--s2); margin-top: var(--s3); font-size: 12.5px; color: var(--ink-2); }
 #dLoader i { width: 14px; height: 14px; border: 2px solid var(--madder); border-right-color: transparent; animation: spin .6s linear infinite; display: block; }
-#discordWebview { flex: 1; border: none; display: none; background: #16181d; }
 
 /* ---------- AI ---------- */
-.ai-top { display: flex; align-items: center; gap: var(--s3); padding: var(--s3) var(--s5); border-bottom: 1px solid var(--selvedge); flex-shrink: 0; }
-.ai-top .who2 h4 { font-family: var(--display); font-size: 16px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
-.ai-top .who2 p { font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); }
-.ai-top .gap { flex: 1; }
 .ibtn { width: 30px; height: 30px; display: grid; place-items: center; color: var(--ink-3); border: 1px solid transparent; transition: color var(--t-fast), border-color var(--t-fast); }
 .ibtn:hover { color: var(--ink); border-color: var(--selvedge-2); }
 
@@ -277,41 +272,6 @@ body { display: flex; }
 .ctxr .k { font-family: var(--mono); font-size: 11px; color: var(--madder-lit); min-width: 118px; flex-shrink: 0; }
 .ctxr .v { font-size: 11.5px; color: var(--ink-2); overflow-wrap: anywhere; -webkit-user-select: text; }
 
-/* ---------- DONATION ----------
-   A QR code is already a weave: a square grid of filled and empty threads,
-   flat, no depth, read by contrast alone. So it needs no styling to belong
-   here — it only needs its own selvedge and the two ends of the palette
-   (undyed wool ground, indigo-black modules), which is also the pairing that
-   scans best. Nothing about this band is decorated; asking for money should
-   look like every other row in the app, not like a landing page. */
-.dono { display: flex; gap: var(--s6); align-items: flex-start; flex-wrap: wrap; }
-.dono .qr {
-    width: 164px; height: 164px; flex-shrink: 0;
-    border: 1px solid var(--selvedge-2);
-    background: var(--wool);   /* shows through before the SVG paints */
-}
-.dono .qr img { width: 100%; height: 100%; display: block; }
-.dono .side { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: var(--s3); }
-
-/* The address itself. Selectable and wrapping — 42 characters never fit a
-   single line at a readable mono size, and a truncated address is worse than
-   no address at all. */
-.addr {
-    font-family: var(--mono); font-size: 12.5px; line-height: 1.6;
-    color: var(--ink); overflow-wrap: anywhere; -webkit-user-select: text;
-    background: var(--band); border: 1px solid var(--selvedge-2);
-    padding: var(--s2) var(--s3);
-}
-.dono-acts { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; }
-/* The confirmation line keeps its own row and its own height whether it has
-   text or not, so pressing Copy never re-flows the buttons under the cursor. */
-.dono-acts .said { flex-basis: 100%; font-size: 11.5px; line-height: 1.45; color: var(--ok-lit); min-height: 17px; }
-.dono-acts .said.bad { color: var(--bad-lit); }
-/* Wide enough that the code and the address sit side by side instead of the
-   QR stranding a column of empty ground next to itself. */
-#donateOverlay .sheet { max-width: 520px; }
-.dono-note { font-size: 11.5px; color: var(--ink-3); line-height: 1.5; max-width: 60ch; }
-
 /* ---------- BOOT ---------- */
 .boot { position: absolute; inset: 0; z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--s5); background: var(--ground); }
 .boot.gone { display: none; }
@@ -320,774 +280,487 @@ body { display: flex; }
 .boot .bs { font-size: 12.5px; color: var(--ink-2); min-height: 18px; }
 .boot .meter { width: 200px; }
 </style>
-<link rel="stylesheet" href="whyscripts.css">
+<link href="whyscripts.css" rel="stylesheet"/>
 </head>
 <body>
-
 <div class="cloth" id="cloth">
+<!-- ============ SELVEDGE ============ -->
+<div class="selv">
+<div class="mark">
+<svg aria-hidden="true" class="glyph" viewbox="0 0 64 64">
+<path d="M18 19h7l7 17 7-17h7L35 46h-6z" fill="currentColor"></path>
+</svg>
+<span class="nm">BurnedWolf</span>
+<span class="brand-by">by whyscripts.com</span>
+<span class="ver" id="verChip"></span>
+</div>
+<div class="wctl">
+<button class="wbtn" data-i18n-title="win.tray" id="btnMinimize">
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><line x1="5" x2="19" y1="12" y2="12"></line></svg>
+</button>
+<button class="wbtn x" data-i18n-title="win.close" id="exit">
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
+</button>
+</div>
+</div>
+<div class="body">
+<!-- ============ RAIL ============ -->
+<nav class="rail">
+<button class="rbtn on" data-nav="homeView">
+<svg class="motif" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.7" viewbox="0 0 24 24"><path d="M12 3 L20 8 L20 16 L12 21 L4 16 L4 8 Z"></path><path d="M12 8 L15.5 10 L15.5 14 L12 16 L8.5 14 L8.5 10 Z"></path></svg>
+<span data-i18n="nav.home">Home</span><i class="live"></i>
+</button>
 
-    <!-- ============ SELVEDGE ============ -->
-    <div class="selv">
-        <div class="mark">
-            <svg class="glyph" viewBox="0 0 64 64" aria-hidden="true">
-                <path d="M18 19h7l7 17 7-17h7L35 46h-6z" fill="currentColor"></path>
-            </svg>
-            <span class="nm">BurnedWolf</span>
-            <span class="brand-by">by whyscripts.com</span>
-            <span class="ver" id="verChip"></span>
-        </div>
-        <div class="wctl">
-            <button class="wbtn" id="btnMinimize" data-i18n-title="win.tray">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            </button>
-            <button class="wbtn x" id="exit" data-i18n-title="win.close">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-        </div>
-    </div>
+<button class="rbtn" data-nav="dnsView">
+<svg class="motif" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.7" viewbox="0 0 24 24"><rect height="11" width="16" x="4" y="10"></rect><path d="M8 10 V7 a4 4 0 0 1 8 0 v3"></path><path d="M12 14 v3"></path></svg>
+<span data-i18n="nav.dns">DNS</span><i class="live"></i>
+</button>
+<button class="rbtn" data-nav="analysisView">
+<svg class="motif" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.7" viewbox="0 0 24 24"><path d="M3 18 L8 8 L12 15 L16 5 L21 18"></path></svg>
+<span data-i18n="nav.analysis">Analysis</span>
+</button>
+<button class="rbtn" data-nav="statsView">
+<svg class="motif" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.7" viewbox="0 0 24 24"><path d="M5 20 V11 M12 20 V5 M19 20 V14"></path><path d="M3 20 H21"></path></svg>
+<span data-i18n="nav.stats">Stats</span>
+</button>
 
-    <div class="body">
-        <!-- ============ RAIL ============ -->
-        <nav class="rail">
-            <button class="rbtn on" data-nav="homeView">
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M12 3 L20 8 L20 16 L12 21 L4 16 L4 8 Z"></path><path d="M12 8 L15.5 10 L15.5 14 L12 16 L8.5 14 L8.5 10 Z"></path></svg>
-                <span data-i18n="nav.home">Home</span><i class="live"></i>
-            </button>
-            <button class="rbtn" data-nav="aiView">
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M4 12 L8 8 L12 12 L16 8 L20 12"></path><path d="M4 17 L8 13 L12 17 L16 13 L20 17"></path><path d="M4 7 L8 3 L12 7 L16 3 L20 7"></path></svg>
-                <span>BurnedWolf AI</span><i class="live"></i>
-            </button>
-            <button class="rbtn" data-nav="dnsView">
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><rect x="4" y="10" width="16" height="11"></rect><path d="M8 10 V7 a4 4 0 0 1 8 0 v3"></path><path d="M12 14 v3"></path></svg>
-                <span data-i18n="nav.dns">DNS</span><i class="live"></i>
-            </button>
-            <button class="rbtn" data-nav="analysisView">
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M3 18 L8 8 L12 15 L16 5 L21 18"></path></svg>
-                <span data-i18n="nav.analysis">Analysis</span>
-            </button>
-            <button class="rbtn" data-nav="statsView">
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M5 20 V11 M12 20 V5 M19 20 V14"></path><path d="M3 20 H21"></path></svg>
-                <span data-i18n="nav.stats">Stats</span>
-            </button>
-            <button class="rbtn" data-nav="discordView">
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M4 5 h16 v11 h-7 l-5 4 v-4 h-4 z"></path></svg>
-                <span>Discord</span><i class="live"></i>
-            </button>
-            <button class="rbtn" data-nav="advancedView">
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M4 6 h16 M4 12 h16 M4 18 h16"></path><path d="M9 3 v6 M15 9 v6 M9 15 v6"></path></svg>
-                <span data-i18n="nav.advanced">Advanced</span>
-            </button>
-            <div class="rail-gap"></div>
-            <button class="rbtn" data-nav="verifyView">
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M12 3 L20 6 v6 c0 4-3.5 7-8 9 -4.5-2-8-5-8-9 V6 Z"></path><path d="M8.5 12 l2.5 2.5 l4.5-5"></path></svg>
-                <span data-i18n="nav.verify">Integrity</span>
-            </button>
-            <button class="rbtn" data-nav="donateView">
-                <!-- eli belinde — the hands-on-hips figure, the kilim motif for
-                     abundance and giving. Same drawn vocabulary as kurt ağzı
-                     above; the donation screen gets a real motif, not a heart. -->
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M12 3 L14 5 L12 7 L10 5 Z"></path><path d="M12 7 v6"></path><path d="M12 9 L7 9 L5 13 M12 9 L17 9 L19 13"></path><path d="M12 13 L6 21 h12 Z"></path></svg>
-                <span data-i18n="nav.donate">Support</span>
-            </button>
-            <button class="rbtn" id="btnSettings" data-nav="settingsView">
-                <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M12 4 L16 6 v5 l-4 2 l-4-2 V6 Z"></path><path d="M5 14 h14 M7 18 h10"></path></svg>
-                <span data-i18n="nav.settings">Settings</span>
-            </button>
-        </nav>
+<button class="rbtn burnedcord-launch" id="btnBurnedCordRail" type="button">
+<svg class="motif" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.7" viewbox="0 0 24 24"><path d="M5 6h14v9H9l-4 3z"></path><path d="M9 10h.01M12 10h.01M15 10h.01"></path></svg>
+<span>BurnedCord</span><i class="live"></i></button><button class="rbtn" data-nav="advancedView">
+<svg class="motif" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.7" viewbox="0 0 24 24"><path d="M4 6 h16 M4 12 h16 M4 18 h16"></path><path d="M9 3 v6 M15 9 v6 M9 15 v6"></path></svg>
+<span data-i18n="nav.advanced">Advanced</span>
+</button>
+<div class="rail-gap"></div>
+<button class="rbtn" data-nav="verifyView">
+<svg class="motif" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.7" viewbox="0 0 24 24"><path d="M12 3 L20 6 v6 c0 4-3.5 7-8 9 -4.5-2-8-5-8-9 V6 Z"></path><path d="M8.5 12 l2.5 2.5 l4.5-5"></path></svg>
+<span data-i18n="nav.verify">Integrity</span>
+</button>
 
-        <div class="stage">
+<button class="rbtn" data-nav="settingsView" id="btnSettings">
+<svg class="motif" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.7" viewbox="0 0 24 24"><path d="M12 4 L16 6 v5 l-4 2 l-4-2 V6 Z"></path><path d="M5 14 h14 M7 18 h10"></path></svg>
+<span data-i18n="nav.settings">Settings</span>
+</button>
+</nav>
+<div class="stage">
+<!-- ============ HOME ============ -->
+<section class="view" id="homeView">
+<div class="notice" id="dnsNotice">
+<svg class="motif" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.8" viewbox="0 0 24 24"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9 v5 M12 17 v.01"></path></svg>
+<span class="nt"><b data-i18n="dnsfix.banner_title" id="dnsNoticeTitle">DNS is stuck on 127.0.0.1</b><p data-i18n="dnsfix.banner_text" id="dnsNoticeText">Encrypted DNS didn't shut down cleanly.</p></span>
+<button class="act plain sm" data-i18n="dnsfix.btn" id="btnFixResidue">Repair DNS</button>
+</div>
+<div class="band">
+<div class="hero">
+<div aria-hidden="true" class="hero-brand-mark">
+<svg viewbox="0 0 64 64"><path d="M18 19h7l7 17 7-17h7L35 46h-6z" fill="#fff"></path></svg>
+</div>
+<canvas class="hero-motif" id="guardMotif"></canvas>
+<div class="hero-txt">
+<div class="hero-state" data-i18n="home.protection_off" id="stateText">Protection off</div>
+<p class="hero-why" id="stateSub"></p>
+</div>
+<div class="hero-go">
+<button class="act lg" id="btnPower"><span data-i18n="home.start" id="btnPowerLabel">Start</span></button>
+</div>
+</div>
+</div>
+<div class="band tight raised">
+<div class="doing">
+<span class="who">
+<svg class="motif sm" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.8" viewbox="0 0 24 24"><path d="M3 9 L12 4 L21 9"></path><path d="M6 12 L12 9 L18 12"></path><path d="M9 15 L12 13.5 L15 15"></path></svg>
+<b data-i18n="home.isp_detecting" id="ispText">Detecting ISP…</b>
+</span>
+<span class="sep"></span>
+<span class="who"><span class="tiny" data-i18n="home.profile">Profile</span> <b id="profileName">—</b></span>
+<button class="link" data-i18n="home.change" id="btnChangeProfile">change</button>
+<span id="profileWrap">
+<select id="profileSelect"></select>
+<button class="link" data-i18n="home.auto_pick" id="btnAutoPick">Auto select</button>
+</span>
+</div>
+</div>
+<div class="band">
+<div class="reads">
+<button class="read" id="cardDns">
+<span class="read-top"><svg class="motif sm" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.8" viewbox="0 0 24 24"><rect height="11" width="16" x="4" y="10"></rect><path d="M8 10 V7 a4 4 0 0 1 8 0 v3"></path></svg><span class="t" data-i18n="home.dns_title">Encrypted DNS</span></span>
+<span class="read-val" id="dnsVal">—</span>
+<span class="read-sub" id="dnsSub"></span>
+</button>
+<button class="read burnedcord-card" id="cardBurnedCord"><span class="read-top"><svg class="motif sm" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.8" viewbox="0 0 24 24"><path d="M4 5h16v11h-7l-5 4v-4H4z"></path><path d="M8 10h.01M12 10h.01M16 10h.01"></path></svg><span class="t">BurnedCord</span></span><span class="read-val">Voice · Camera · Screen</span><span class="read-sub">Opens as a separate desktop window</span></button>
+<button class="read" id="cardHealth">
+<span class="read-top"><svg class="motif sm" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.8" viewbox="0 0 24 24"><path d="M3 18 L8 8 L12 15 L16 5 L21 18"></path></svg><span class="t" data-i18n="home.health_title">Connection</span></span>
+<span class="read-val" id="healthVal">—</span>
+<span class="read-sub" data-i18n="home.health_idle" id="healthSub">Starts measuring once protection is on</span>
+</button>
+<button class="read" id="cardIntegrity"><span class="read-top"><svg class="motif sm" fill="none" stroke="currentColor" stroke-linejoin="miter" stroke-width="1.8" viewbox="0 0 24 24"><path d="M12 3l8 3v6c0 4-3.5 7-8 9-4.5-2-8-5-8-9V6z"></path><path d="M8.5 12l2.5 2.5 4.5-5"></path></svg><span class="t">Integrity</span></span><span class="read-val">Verify &amp; repair</span><span class="read-sub">Check BurnedWolf files against the repair bundle</span></button>
+</div>
+</div>
+<div class="band grow"></div>
+<div class="band tight" style="padding:0;">
+<div class="logbar" id="logBar">
+<span class="l" data-i18n="home.log_empty" id="logLine">No events yet</span>
+<span class="c" data-i18n="home.log_title">Log</span>
+</div>
+</div>
+<div class="band scroll" hidden="" id="logPanel" style="padding:var(--s3) var(--s6);"><pre id="logBuf"></pre></div>
+</section>
+<!-- ============ AI — CHAT ============ -->
 
-            <!-- ============ HOME ============ -->
-            <section class="view" id="homeView">
-                <div class="notice" id="dnsNotice">
-                    <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter"><path d="M12 3 L22 20 H2 Z"></path><path d="M12 9 v5 M12 17 v.01"></path></svg>
-                    <span class="nt"><b id="dnsNoticeTitle" data-i18n="dnsfix.banner_title">DNS is stuck on 127.0.0.1</b><p id="dnsNoticeText" data-i18n="dnsfix.banner_text">Encrypted DNS didn't shut down cleanly.</p></span>
-                    <button class="act plain sm" id="btnFixResidue" data-i18n="dnsfix.btn">Repair DNS</button>
-                </div>
+<!-- ============ AI — SETUP ============ -->
 
-                <div class="band">
-                    <div class="hero">
-                        <div class="hero-brand-mark" aria-hidden="true">
-                            <svg viewBox="0 0 64 64"><path d="M18 19h7l7 17 7-17h7L35 46h-6z" fill="#fff"></path></svg>
-                        </div>
-                        <canvas class="hero-motif" id="guardMotif"></canvas>
-                        <div class="hero-txt">
-                            <div class="hero-state" id="stateText" data-i18n="home.protection_off">Protection off</div>
-                            <p class="hero-why" id="stateSub"></p>
-                        </div>
-                        <div class="hero-go">
-                            <button class="act lg" id="btnPower"><span id="btnPowerLabel" data-i18n="home.start">Start</span></button>
-                        </div>
-                    </div>
-                </div>
+<!-- ============ AI — PROVIDER ============ -->
 
-                <div class="band tight raised">
-                    <div class="doing">
-                        <span class="who">
-                            <svg class="motif sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter"><path d="M3 9 L12 4 L21 9"></path><path d="M6 12 L12 9 L18 12"></path><path d="M9 15 L12 13.5 L15 15"></path></svg>
-                            <b id="ispText" data-i18n="home.isp_detecting">Detecting ISP…</b>
-                        </span>
-                        <span class="sep"></span>
-                        <span class="who"><span class="tiny" data-i18n="home.profile">Profile</span> <b id="profileName">—</b></span>
-                        <button class="link" id="btnChangeProfile" data-i18n="home.change">change</button>
-                        <span id="profileWrap">
-                            <select id="profileSelect"></select>
-                            <button class="link" id="btnAutoPick" data-i18n="home.auto_pick">Auto select</button>
-                        </span>
-                    </div>
-                </div>
+<!-- ============ AI — LIMITS ============ -->
 
-                <div class="band">
-                    <div class="reads">
-                        <button class="read" id="cardDns">
-                            <span class="read-top"><svg class="motif sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter"><rect x="4" y="10" width="16" height="11"></rect><path d="M8 10 V7 a4 4 0 0 1 8 0 v3"></path></svg><span class="t" data-i18n="home.dns_title">Encrypted DNS</span></span>
-                            <span class="read-val" id="dnsVal">—</span>
-                            <span class="read-sub" id="dnsSub"></span>
-                        </button>
-                        <button class="read" id="cardDiscord">
-                            <span class="read-top"><svg class="motif sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter"><path d="M4 5 h16 v11 h-7 l-5 4 v-4 h-4 z"></path></svg><span class="t">Discord</span></span>
-                            <span class="read-val" data-i18n="home.tor_title">Tor route</span>
-                            <span class="read-sub" id="torSub" data-i18n="home.tor_idle">Starts when you open Discord</span>
-                        </button>
-                        <button class="read" id="cardHealth">
-                            <span class="read-top"><svg class="motif sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter"><path d="M3 18 L8 8 L12 15 L16 5 L21 18"></path></svg><span class="t" data-i18n="home.health_title">Connection</span></span>
-                            <span class="read-val" id="healthVal">—</span>
-                            <span class="read-sub" id="healthSub" data-i18n="home.health_idle">Starts measuring once protection is on</span>
-                        </button>
-                        <button class="read" id="cardAi">
-                            <span class="read-top"><svg class="motif sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter"><path d="M4 12 L8 8 L12 12 L16 8 L20 12"></path><path d="M4 17 L8 13 L12 17 L16 13 L20 17"></path></svg><span class="t">BurnedWolf AI</span></span>
-                            <span class="read-val" id="aiVal" data-i18n="ai.not_set">Not set up</span>
-                            <span class="read-sub" id="aiSub" data-i18n="ai.tile_sub">Let the AI run BurnedWolf for you</span>
-                        </button>
-                    </div>
-                </div>
+<!-- ============ AI — AUDIT ============ -->
 
-                <div class="band grow"></div>
+<!-- ============ DNS ============ -->
+<section class="view scroll" hidden="" id="dnsView">
+<div class="sub">
+<button class="back nav-back"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
+<span class="ttl" data-i18n="dns.head">DNS</span>
+<span class="gap"></span>
+<span class="tag" id="dnsStatePill">—</span>
+</div>
+<div class="pad stack">
+<p class="lead" data-i18n="dns.hero_desc">Every site you visit starts with a DNS question. Turkish ISPs hijack port 53 to answer it themselves — encrypted DNS hides the question inside HTTPS so they can't.</p>
+<div>
+<div class="row">
+<span class="rt"><h4 data-i18n="dns.current">Current</h4><p id="dnsCurrent">…</p></span>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="dns.encrypted_title">Encrypted DNS (DoH)</h4><p data-i18n="dns.encrypted_desc">Runs dnscrypt-proxy locally and routes DNS over HTTPS.</p></span>
+<label class="sw"><input id="dohToggle" type="checkbox"/><span class="bead"></span></label>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="dnsfix.title">Repair DoH residue</h4><p data-i18n="dnsfix.desc">If a crash left DNS pointing at 127.0.0.1 with nothing listening, this puts it back.</p></span>
+<button class="act plain sm" data-i18n="dnsfix.btn" id="btnFixResidue2">Repair DNS</button>
+</div>
+</div>
+<div>
+<div class="band-label" data-i18n="dns.providers">Or pick a plain DNS provider</div>
+<div id="dnsPresets" style="margin-top:var(--s3);"></div>
+<button class="act quiet sm" data-i18n="dns.reset_dhcp" id="btnDnsDhcp">Reset to automatic (DHCP)</button>
+</div>
+</div>
+</section>
+<!-- ============ ANALYSIS ============ -->
+<section class="view" hidden="" id="analysisView">
+<div class="sub">
+<button class="back nav-back"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
+<span class="ttl" data-i18n="analysis.head">Network analysis</span>
+</div>
+<div class="pad scroll" style="flex:1;min-height:0;">
+<p class="small" data-i18n="analysis.desc" style="margin-bottom:var(--s4);">Tests profiles against Discord, YouTube, X, Roblox and Twitch, then applies the best one.</p>
+<div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4);flex-wrap:wrap;">
+<div class="pick">
+<button class="on" data-i18n="analysis.quick" id="segQuick">Quick</button>
+<button data-i18n="analysis.deep" id="segDeep">Deep</button>
+</div>
+<button class="act sm" data-i18n="analysis.run" id="btnRunScan">Run analysis</button>
+<button class="act plain sm" data-i18n="analysis.cancel" id="btnCancelScan" style="display:none;">Cancel</button>
+<button class="act quiet sm" data-i18n="analysis.report" id="btnReport" style="display:none;">Save report</button>
+</div>
+<div id="scanProgress" style="display:none;margin-bottom:var(--s4);">
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:var(--s2);"><span id="scanPhase">…</span><span class="num" id="scanCount">0 / 0</span></div>
+<div class="meter" id="scanMeter"></div>
+<div class="tiny num" id="scanTarget" style="margin-top:var(--s2);">—</div>
+</div>
+<div id="topResults" style="display:none;margin-bottom:var(--s4);"></div>
+<div class="log" id="scanTerm">
+<div class="log-empty"><b data-i18n="analysis.empty_title">Nothing measured yet</b><span data-i18n="analysis.empty_desc">Run an analysis and every profile gets tested against real sites.</span></div>
+</div>
+</div>
+</section>
+<!-- ============ INTEGRITY ============ -->
+<section class="view" hidden="" id="verifyView">
+<div class="sub">
+<button class="back nav-back"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
+<span class="ttl" data-i18n="home.verify_title">File integrity</span>
+</div>
+<div class="pad scroll" style="flex:1;min-height:0;">
+<p class="small" data-i18n="verify.desc" style="margin-bottom:var(--s4);">Verifies your local installation against the original server files and repairs anything missing or corrupt.</p>
+<div style="margin-bottom:var(--s4);">
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:var(--s2);"><span data-i18n="verify.phase_idle" id="vPhase">Ready to start</span><span class="num" id="vPct">0%</span></div>
+<div class="meter" id="vMeter"></div>
+<div class="tiny num" id="vFile" style="margin-top:var(--s2);">—</div>
+</div>
+<div class="log" id="verifyTerm">
+<div class="log-empty"><b data-i18n="verify.empty_title">No check run yet</b><span data-i18n="verify.empty_desc">Every bundled file is compared against the original.</span></div>
+</div>
+<button class="act sm" data-i18n="verify.btn_start" id="btnStartVerify" style="margin-top:var(--s4);">Start integrity check</button>
+</div>
+</section>
+<!-- ============ DISCORD ============ -->
 
-                <div class="band tight" style="padding:0;">
-                    <div class="logbar" id="logBar">
-                        <span class="l" id="logLine" data-i18n="home.log_empty">No events yet</span>
-                        <span class="c" data-i18n="home.log_title">Log</span>
-                    </div>
-                </div>
-                <div class="band scroll" id="logPanel" hidden style="padding:var(--s3) var(--s6);"><pre id="logBuf"></pre></div>
-            </section>
+<!-- ============ ADVANCED ============ -->
+<section class="view scroll" hidden="" id="advancedView">
+<div class="sub">
+<button class="back nav-back"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
+<span class="ttl" data-i18n="adv.head">Advanced</span>
+</div>
+<div class="pad stack">
+<div>
+<div class="row">
+<span class="rt"><h4 data-i18n="adv.failover_title">Auto failover</h4><p data-i18n="adv.failover_desc" id="failoverHint">Rotate through recommended profiles if Discord becomes unreachable.</p></span>
+<label class="sw"><input id="failoverToggle" type="checkbox"/><span class="bead"></span></label>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="adv.trmaster_title">Turkey blocked-list</h4><p data-i18n="adv.trmaster_desc" id="trMasterCount">Bundled list of Türkiye-blocked domains.</p></span>
+<label class="sw"><input id="trMasterToggle" type="checkbox"/><span class="bead"></span></label>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="builder.adv_title">Custom profile builder</h4><p data-i18n="builder.adv_desc">Build, clone, import and share your own DPI profiles.</p></span>
+<button class="act plain sm" data-i18n="builder.open" id="btnOpenBuilder">Open</button>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="proxy.adv_title">Proxy bridge</h4><p data-i18n="proxy.adv_desc">Share Tor with other apps as SOCKS/HTTP, or a PAC file.</p></span>
+<button class="act plain sm" data-i18n="proxy.open" id="btnOpenProxy">Open</button>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="bridges.adv_title">Tor bridges</h4><p data-i18n="bridges.adv_desc">Pluggable transports (obfs4 / snowflake) for when Tor is blocked.</p></span>
+<button class="act plain sm" data-i18n="bridges.open" id="btnOpenBridges">Open</button>
+</div>
+</div>
+<div>
+<div class="band-label" data-i18n="adv.whitelist_title">Whitelist</div>
+<p class="small" data-i18n="adv.whitelist_desc" style="margin:var(--s2) 0 var(--s3);">One domain per line. These get DPI bypass treatment.</p>
+<textarea id="whitelistInput" spellcheck="false"></textarea>
+<div style="margin-top:var(--s3);display:flex;align-items:center;gap:var(--s3);">
+<button class="act plain sm" data-i18n="adv.save" id="btnSaveWhitelist">Save</button>
+<span class="tiny" data-i18n="adv.saved" id="saveToast" style="display:none;color:var(--ok-lit);">Saved</span>
+</div>
+</div>
+</div>
+</section>
+<!-- ============ PROFILE BUILDER ============ -->
+<section class="view scroll" hidden="" id="builderView">
+<div class="sub">
+<button class="back nav-back"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
+<span class="ttl" data-i18n="builder.title">Profile builder</span>
+<span class="gap" style="flex:1;"></span>
+<button class="act plain sm" data-i18n="builder.import" id="btnImportProfile">Import</button>
+</div>
+<div class="pad stack">
+<div class="fld">
+<label class="lbl" data-i18n="builder.name">Profile name</label>
+<input class="field" data-i18n-placeholder="builder.name_ph" id="bpName" spellcheck="false"/>
+</div>
+<div class="fld">
+<label class="lbl" data-i18n="builder.clone">Start from an existing profile</label>
+<div style="display:flex;gap:var(--s3);">
+<select class="field" id="bpClone" style="flex:1;"></select>
+<button class="act plain sm" data-i18n="builder.load" id="btnCloneLoad">Load</button>
+</div>
+</div>
+<div>
+<div class="band-label" data-i18n="builder.quick_add">Quick add</div>
+<p class="small" data-i18n="builder.quick_add_desc" style="margin:var(--s2) 0 var(--s3);">Click to append a flag. Use “new chain” to start a separate filter block.</p>
+<div class="chips" id="bpChips"></div>
+</div>
+<div class="fld">
+<label class="lbl" data-i18n="builder.args">Arguments (one per line)</label>
+<textarea id="bpArgs" spellcheck="false" style="min-height:150px;font-family:var(--mono);font-size:12px;"></textarea>
+</div>
+<div class="bp-summary" id="bpSummary"><b id="bpSummaryTitle">—</b><span id="bpSummaryText"></span></div>
+<div style="display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;">
+<button class="act sm" data-i18n="builder.save_use" id="btnSaveUseProfile">Save &amp; use</button>
+<button class="act plain sm" data-i18n="builder.save" id="btnSaveProfile">Save</button>
+<button class="act plain sm" data-i18n="builder.export" id="btnExportProfile">Export</button>
+<button class="act danger sm" data-i18n="builder.delete" id="btnDeleteProfile" style="display:none;">Delete</button>
+<span class="tiny" id="bpStatus"></span>
+</div>
+<div>
+<div class="band-label" data-i18n="builder.saved">My profiles</div>
+<div id="bpList"></div>
+</div>
+</div>
+</section>
+<!-- ============ TOR BRIDGES ============ -->
+<section class="view scroll" hidden="" id="bridgesView">
+<div class="sub">
+<button class="back nav-back"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
+<span class="ttl" data-i18n="bridges.title">Tor bridges</span>
+<span class="gap" style="flex:1;"></span>
+<span class="tiny num" id="brStatus"></span>
+</div>
+<div class="pad stack">
+<p class="small" data-i18n="bridges.intro">Use pluggable transports when Tor itself is blocked. Needs the transport binary in the app’s tor-bin folder.</p>
+<div class="row">
+<span class="rt"><h4 data-i18n="bridges.enable">Use bridges</h4><p data-i18n="bridges.enable_desc">Route Tor through a pluggable transport.</p></span>
+<label class="sw"><input id="brEnable" type="checkbox"/><span class="bead"></span></label>
+</div>
+<div class="fld">
+<label class="lbl" data-i18n="bridges.transport">Transport</label>
+<div class="pick" id="brTransport">
+<button data-t="obfs4">obfs4</button>
+<button data-t="snowflake">snowflake</button>
+</div>
+<span class="tiny" id="brAvail" style="display:block;margin-top:var(--s2);"></span>
+</div>
+<div class="fld">
+<label class="lbl" data-i18n="bridges.lines">Bridge lines</label>
+<p class="small" data-i18n="bridges.lines_desc" style="margin:var(--s2) 0;">One per line, from bridges.torproject.org or Tor Browser. Snowflake needs its one bridge line too.</p>
+<textarea data-i18n-placeholder="bridges.lines_ph" id="brLines" spellcheck="false" style="min-height:120px;font-family:var(--mono);font-size:12px;"></textarea>
+</div>
+<div style="display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;">
+<button class="act sm" data-i18n="bridges.save" id="btnBridgeSave">Save</button>
+<button class="act plain sm" data-i18n="bridges.restart" id="btnBridgeRestart">Save &amp; restart Tor</button>
+<span class="tiny" id="brSaveStatus"></span>
+</div>
+<div class="bp-summary" id="brHelp">
+<b data-i18n="bridges.help_title">Where to get the files</b>
+<span data-i18n="bridges.help_body">Copy obfs4proxy.exe (or lyrebird.exe) and snowflake-client.exe from Tor Browser’s PluggableTransports folder into this app’s tor-bin folder.</span>
+</div>
+</div>
+</section>
+<!-- ============ PROXY BRIDGE ============ -->
+<section class="view scroll" hidden="" id="proxyView">
+<div class="sub">
+<button class="back nav-back"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
+<span class="ttl" data-i18n="proxy.title">Proxy bridge</span>
+<span class="gap" style="flex:1;"></span>
+<span class="tiny num" id="pxTor"></span>
+</div>
+<div class="pad stack">
+<p class="small" data-i18n="proxy.intro">Route other apps through Tor — point them at one of these endpoints.</p>
+<div class="row">
+<span class="rt"><h4 data-i18n="proxy.tor_status">Tor circuit</h4><p data-i18n="home.tor_idle" id="pxTorSub">Idle</p></span>
+<button class="act plain sm" data-i18n="proxy.start_tor" id="btnProxyStartTor">Start Tor</button>
+</div>
+<div>
+<div class="band-label" data-i18n="proxy.socks">SOCKS5 (recommended)</div>
+<p class="small" data-i18n="proxy.socks_desc" style="margin:var(--s2) 0;">Best for browsers and SOCKS-aware apps. DNS resolves through Tor.</p>
+<div class="ep"><code id="pxSocks">127.0.0.1:9050</code><button class="act plain sm" data-i18n="proxy.copy" id="btnCopySocks">Copy</button></div>
+</div>
+<div>
+<div class="band-label" data-i18n="proxy.http">HTTP proxy</div>
+<p class="small" data-i18n="proxy.http_desc" style="margin:var(--s2) 0;">For apps that only accept an HTTP proxy. Tunnels through Tor.</p>
+<div class="ep"><code id="pxHttp">127.0.0.1:9080</code><button class="act plain sm" data-i18n="proxy.copy" id="btnCopyHttp">Copy</button><button class="act sm" data-i18n="proxy.enable" id="btnToggleHttp">Enable</button></div>
+<span class="tiny" id="pxHttpStatus" style="display:block;margin-top:var(--s2);"></span>
+</div>
+<div>
+<div class="band-label" data-i18n="proxy.pac">PAC file</div>
+<p class="small" data-i18n="proxy.pac_desc" style="margin:var(--s2) 0;">Point Windows or your browser’s automatic proxy config at this file.</p>
+<div class="ep"><code id="pxPac" style="word-break:break-all;">—</code><button class="act plain sm" data-i18n="proxy.copy" id="btnCopyPac">Copy</button><button class="act sm" data-i18n="proxy.generate" id="btnGenPac">Generate</button></div>
+<span class="tiny" id="pxPacStatus" style="display:block;margin-top:var(--s2);"></span>
+</div>
+</div>
+</section>
+<!-- ============ SETTINGS ============ -->
+<!-- ============ STATS ============ -->
+<section class="view scroll" hidden="" id="statsView">
+<div class="sub">
+<button class="back nav-back"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
+<span class="ttl" data-i18n="stats.title">Statistics</span>
+<span class="gap" style="flex:1;"></span>
+<button class="act plain sm" data-i18n="stats.reset" id="btnResetStats">Reset</button>
+</div>
+<div class="pad stack">
+<div class="reads" style="border:1px solid var(--selvedge);">
+<div class="read"><div class="read-top"><span class="t" data-i18n="stats.uptime">Uptime</span></div><div class="read-val" id="stUptime">—</div><div class="read-sub" id="stUptimeSub"></div></div>
+<div class="read"><div class="read-top"><span class="t" data-i18n="stats.total_runtime">Total runtime</span></div><div class="read-val" id="stRuntime">—</div><div class="read-sub" id="stSessions"></div></div>
+<div class="read"><div class="read-top"><span class="t" data-i18n="stats.success">Success</span></div><div class="read-val" id="stSuccess">—</div><div class="read-sub" id="stProbes"></div></div>
+<div class="read"><div class="read-top"><span class="t" data-i18n="stats.failovers">Failovers</span></div><div class="read-val" id="stFailovers">—</div><div class="read-sub" data-i18n="stats.rotations">rotations</div></div>
+</div>
+<div>
+<div class="stat-h" data-i18n="stats.timeline">Health timeline</div>
+<div class="spark" id="stSpark"></div>
+</div>
+<div>
+<div class="stat-h" data-i18n="stats.by_profile">By profile</div>
+<div id="stProfiles"></div>
+</div>
+<div>
+<div class="stat-h" data-i18n="stats.failover_history">Failover history</div>
+<div id="stFailoverList"></div>
+</div>
+</div>
+</section>
+<!-- ============ SUPPORT ============ -->
 
-            <!-- ============ AI — CHAT ============ -->
-            <section class="view" id="aiView" hidden>
-                <div class="ai-top">
-                    <svg class="motif lg" viewBox="0 0 24 24" fill="none" stroke="var(--madder-lit)" stroke-width="1.6" stroke-linejoin="miter"><path d="M4 12 L8 8 L12 12 L16 8 L20 12"></path><path d="M4 17 L8 13 L12 17 L16 13 L20 17"></path><path d="M4 7 L8 3 L12 7 L16 3 L20 7"></path></svg>
-                    <span class="who2"><h4>BurnedWolf AI</h4><p id="aiModelChip">—</p></span>
-                    <span class="gap"></span>
-                    <span class="tag" id="aiLimitChip">—</span>
-                    <button class="ibtn" id="btnAiDiagnose" data-i18n-title="ai.diagnose"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter"><path d="M6 3 v6 a4 4 0 0 0 8 0 V3"></path><path d="M10 17 a4 4 0 0 0 8 0 v-2"></path><circle cx="18" cy="11" r="2"></circle></svg></button>
-                    <button class="ibtn" id="btnAiLimits" data-i18n-title="ai.limits"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20 V10 M10 20 V4 M16 20 V14 M22 20 H2"></path></svg></button>
-                    <button class="ibtn" id="btnAiClear" data-i18n-title="ai.clear"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7 h16 M9 7 V4 h6 v3 M6 7 l1 13 h10 l1-13"></path></svg></button>
-                    <button class="ibtn" id="btnAiSettings" data-i18n-title="ai.settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter"><path d="M12 4 L16 6 v5 l-4 2 l-4-2 V6 Z"></path><path d="M5 15 h14 M7 19 h10"></path></svg></button>
-                </div>
-                <div id="aiChat"></div>
-                <div class="hints" id="aiSuggest"></div>
-                <div class="compose">
-                    <textarea id="aiInput" rows="1" spellcheck="false" data-i18n-placeholder="ai.placeholder"></textarea>
-                    <button id="aiSend" data-i18n-title="ai.send"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="miter"><path d="M3 12 L21 4 L17 20 L11 14 Z"></path></svg></button>
-                </div>
-            </section>
-
-            <!-- ============ AI — SETUP ============ -->
-            <section class="view scroll" id="aiSetupView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="ai.setup_head">BurnedWolf AI</span>
-                    <span class="gap"></span>
-                    <button class="link" id="btnAiAudit" data-i18n="ai.audit_link">What can it see?</button>
-                </div>
-                <div class="pad stack">
-                    <p class="lead" data-i18n="ai.hero_desc">Connect any AI provider and BurnedWolf AI can read your connection, pick the right bypass profile, fix DNS and configure the whole app for you.</p>
-                    <div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="ai.enable_title">Enable BurnedWolf AI</h4><p data-i18n="ai.enable_desc">Needs a provider and a model.</p></span>
-                            <label class="sw"><input type="checkbox" id="aiEnableToggle"><span class="bead"></span></label>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="ai.act_title">AI can change settings</h4><p data-i18n="ai.act_desc">Lets it start protection, switch profiles and fix DNS itself.</p></span>
-                            <label class="sw"><input type="checkbox" id="aiActToggle"><span class="bead"></span></label>
-                        </div>
-                    </div>
-                    <div class="band-label" data-i18n="ai.pick_provider">Choose a provider</div>
-                    <!-- Inside .pad on purpose: .view.scroll scrolls its .pad, so a
-                         sibling here would sit outside the scroll region and be
-                         unreachable below the fold. -->
-                    <div class="provs" id="providerGrid"></div>
-                </div>
-            </section>
-
-            <!-- ============ AI — PROVIDER ============ -->
-            <section class="view scroll" id="aiProviderView" hidden>
-                <div class="sub">
-                    <button class="back" id="btnBackToProviders"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" id="provTitle">Provider</span>
-                    <span class="gap"></span>
-                    <span class="tag" id="provTierPill">—</span>
-                </div>
-                <div class="pad stack">
-                    <div>
-                        <div class="band-label" data-i18n="ai.how_to_key">How to get your API key</div>
-                        <p class="small" id="provFreeNote" style="margin:var(--s2) 0 var(--s4);"></p>
-                        <div class="steps" id="provSteps"></div>
-                        <div style="display:flex;gap:var(--s2);flex-wrap:wrap;margin-top:var(--s4);">
-                            <button class="act plain sm" id="btnOpenConsole" data-i18n="ai.open_console">Open provider console</button>
-                            <button class="act quiet sm" id="btnOpenPricing" data-i18n="ai.open_pricing">Pricing page</button>
-                        </div>
-                    </div>
-
-                    <div id="provKeyPanel">
-                        <div class="band-label" data-i18n="ai.your_key">Your API key</div>
-                        <p class="small" style="margin:var(--s2) 0 var(--s3);" data-i18n="ai.key_desc">Stored encrypted with Windows DPAPI on this device only.</p>
-                        <div class="keyrow">
-                            <input class="field" type="password" id="provKeyInput" spellcheck="false" autocomplete="off" data-i18n-placeholder="ai.key_placeholder">
-                            <button class="ibtn" id="btnKeyReveal" data-i18n-title="ai.reveal"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12 s4-7 10-7 10 7 10 7 -4 7-10 7 -10-7-10-7z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button>
-                            <button class="act plain sm" id="btnKeySave" data-i18n="ai.save_test">Save &amp; test</button>
-                        </div>
-                        <div id="provCustomEndpoint" style="margin-top:var(--s2);display:none;">
-                            <input class="field" id="provEndpointInput" spellcheck="false" style="font-family:var(--mono);font-size:12px;" placeholder="https://host/v1">
-                        </div>
-                        <div class="keystate" id="provKeyState"></div>
-                        <button class="link" id="btnKeyDelete" style="margin-top:var(--s2);display:none;" data-i18n="ai.forget_key">Forget this key</button>
-                    </div>
-
-                    <div>
-                        <div class="band-label" data-i18n="ai.models">Models</div>
-                        <p class="small" id="provQuotaNote" style="margin:var(--s2) 0 var(--s3);"></p>
-                        <div style="display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s3);flex-wrap:wrap;">
-                            <div class="pick">
-                                <button id="segModelsAll" class="on" data-i18n="ai.filter_all">All</button>
-                                <button id="segModelsFree" data-i18n="ai.filter_free">Free only</button>
-                            </div>
-                            <button class="act quiet sm" id="btnRefreshModels" data-i18n="ai.refresh_models">Load live list</button>
-                            <span class="tag" id="modelSourcePill" data-i18n="ai.list_bundled">Bundled list</span>
-                        </div>
-                        <div class="models" id="modelList"></div>
-                    </div>
-
-                    <div>
-                        <div class="band-label" data-i18n="ai.custom_model">Custom model id</div>
-                        <p class="small" style="margin:var(--s2) 0 var(--s3);" data-i18n="ai.custom_model_desc">Know the exact model name? Type it here.</p>
-                        <div class="keyrow">
-                            <input class="field" id="customModelInput" spellcheck="false" placeholder="provider/model-name">
-                            <button class="act plain sm" id="btnCustomModel" data-i18n="ai.use">Use</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ AI — LIMITS ============ -->
-            <section class="view scroll" id="aiLimitView" hidden>
-                <div class="sub">
-                    <button class="back" id="btnBackFromLimits"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="ai.limits">AI usage &amp; limits</span>
-                    <span class="gap"></span>
-                    <button class="link" id="btnResetUsage" data-i18n="ai.reset_usage">Reset counters</button>
-                </div>
-                <div class="pad stack">
-                    <div>
-                        <div class="band-label" data-i18n="ai.last_14">Last 14 days</div>
-                        <canvas id="usageChart" style="margin-top:var(--s2);"></canvas>
-                        <div id="chartEmpty" class="tiny" hidden data-i18n="ai.no_usage">No requests yet</div>
-                    </div>
-                    <div class="figs">
-                        <span class="fig"><span class="fl" data-i18n="ai.today_requests">today</span><span class="fv" id="statReq">0</span><span class="fs" data-i18n="ai.stat_requests">requests</span></span>
-                        <span class="fig"><span class="fl" data-i18n="ai.stat_in">Input</span><span class="fv" id="statIn">0</span><span class="fs" data-i18n="ai.stat_today">today</span></span>
-                        <span class="fig"><span class="fl" data-i18n="ai.stat_out">Output</span><span class="fv" id="statOut">0</span><span class="fs" data-i18n="ai.stat_today">today</span></span>
-                        <span class="fig"><span class="fl" data-i18n="ai.stat_cost">Cost</span><span class="fv" id="statCost">—</span><span class="fs" data-i18n="ai.stat_estimate">reference</span></span>
-                    </div>
-                    <div id="rateLimitPanel" style="display:none;">
-                        <div class="band-label" data-i18n="ai.provider_limits">Provider rate limits</div>
-                        <div id="rateLimitRows" style="margin-top:var(--s2);"></div>
-                    </div>
-                    <div>
-                        <div class="band-label" data-i18n="ai.free_tips">Staying on the free tier</div>
-                        <p class="small" style="margin-top:var(--s2);" data-i18n="ai.free_tips_desc">Google AI Studio, Groq, OpenRouter's ":free" models and Mistral all have genuinely free quotas.</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ AI — AUDIT ============ -->
-            <section class="view scroll" id="aiAuditView" hidden>
-                <div class="sub">
-                    <button class="back" id="btnBackFromAudit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="ai.audit_head">What BurnedWolf AI sees</span>
-                </div>
-                <div class="pad stack">
-                    <p class="small" data-i18n="ai.audit_desc">This is exactly what gets attached to your message. Nothing is sent until you press send.</p>
-                    <div><div class="band-label" data-i18n="ai.audit_context">Live context</div><div class="ctx" id="ctxList" style="margin-top:var(--s2);"></div></div>
-                    <div><div class="band-label" data-i18n="ai.audit_tools">Actions it can perform</div><div class="ctx" id="toolList" style="margin-top:var(--s2);"></div></div>
-                </div>
-            </section>
-
-            <!-- ============ DNS ============ -->
-            <section class="view scroll" id="dnsView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="dns.head">DNS</span>
-                    <span class="gap"></span>
-                    <span class="tag" id="dnsStatePill">—</span>
-                </div>
-                <div class="pad stack">
-                    <p class="lead" data-i18n="dns.hero_desc">Every site you visit starts with a DNS question. Turkish ISPs hijack port 53 to answer it themselves — encrypted DNS hides the question inside HTTPS so they can't.</p>
-                    <div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="dns.current">Current</h4><p id="dnsCurrent">…</p></span>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="dns.encrypted_title">Encrypted DNS (DoH)</h4><p data-i18n="dns.encrypted_desc">Runs dnscrypt-proxy locally and routes DNS over HTTPS.</p></span>
-                            <label class="sw"><input type="checkbox" id="dohToggle"><span class="bead"></span></label>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="dnsfix.title">Repair DoH residue</h4><p data-i18n="dnsfix.desc">If a crash left DNS pointing at 127.0.0.1 with nothing listening, this puts it back.</p></span>
-                            <button class="act plain sm" id="btnFixResidue2" data-i18n="dnsfix.btn">Repair DNS</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="band-label" data-i18n="dns.providers">Or pick a plain DNS provider</div>
-                        <div id="dnsPresets" style="margin-top:var(--s3);"></div>
-                        <button class="act quiet sm" id="btnDnsDhcp" data-i18n="dns.reset_dhcp">Reset to automatic (DHCP)</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ ANALYSIS ============ -->
-            <section class="view" id="analysisView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="analysis.head">Network analysis</span>
-                </div>
-                <div class="pad scroll" style="flex:1;min-height:0;">
-                    <p class="small" style="margin-bottom:var(--s4);" data-i18n="analysis.desc">Tests profiles against Discord, YouTube, X, Roblox and Twitch, then applies the best one.</p>
-                    <div style="display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s4);flex-wrap:wrap;">
-                        <div class="pick">
-                            <button id="segQuick" class="on" data-i18n="analysis.quick">Quick</button>
-                            <button id="segDeep" data-i18n="analysis.deep">Deep</button>
-                        </div>
-                        <button class="act sm" id="btnRunScan" data-i18n="analysis.run">Run analysis</button>
-                        <button class="act plain sm" id="btnCancelScan" style="display:none;" data-i18n="analysis.cancel">Cancel</button>
-                        <button class="act quiet sm" id="btnReport" style="display:none;" data-i18n="analysis.report">Save report</button>
-                    </div>
-                    <div id="scanProgress" style="display:none;margin-bottom:var(--s4);">
-                        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:var(--s2);"><span id="scanPhase">…</span><span id="scanCount" class="num">0 / 0</span></div>
-                        <div class="meter" id="scanMeter"></div>
-                        <div class="tiny num" style="margin-top:var(--s2);" id="scanTarget">—</div>
-                    </div>
-                    <div id="topResults" style="display:none;margin-bottom:var(--s4);"></div>
-                    <div class="log" id="scanTerm">
-                        <div class="log-empty"><b data-i18n="analysis.empty_title">Nothing measured yet</b><span data-i18n="analysis.empty_desc">Run an analysis and every profile gets tested against real sites.</span></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ INTEGRITY ============ -->
-            <section class="view" id="verifyView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="home.verify_title">File integrity</span>
-                </div>
-                <div class="pad scroll" style="flex:1;min-height:0;">
-                    <p class="small" style="margin-bottom:var(--s4);" data-i18n="verify.desc">Verifies your local installation against the original server files and repairs anything missing or corrupt.</p>
-                    <div style="margin-bottom:var(--s4);">
-                        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:var(--s2);"><span id="vPhase" data-i18n="verify.phase_idle">Ready to start</span><span class="num" id="vPct">0%</span></div>
-                        <div class="meter" id="vMeter"></div>
-                        <div class="tiny num" style="margin-top:var(--s2);" id="vFile">—</div>
-                    </div>
-                    <div class="log" id="verifyTerm">
-                        <div class="log-empty"><b data-i18n="verify.empty_title">No check run yet</b><span data-i18n="verify.empty_desc">Every bundled file is compared against the original.</span></div>
-                    </div>
-                    <button class="act sm" id="btnStartVerify" style="margin-top:var(--s4);" data-i18n="verify.btn_start">Start integrity check</button>
-                </div>
-            </section>
-
-            <!-- ============ DISCORD ============ -->
-            <section class="view" id="discordView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back_app">Back to app</span></button>
-                    <span class="ttl">Discord</span>
-                    <span class="gap"></span>
-                    <span class="tag" id="discordStatus" data-i18n="discord.status_offline">TOR · OFFLINE</span>
-                </div>
-                <div class="gate" id="discordGateway">
-                    <div class="gate-box">
-                        <h3 data-i18n="discord.new_login_title">Account setup</h3>
-                        <p class="sub2" id="dAuthDesc" data-i18n="discord.new_login_desc">Your credentials are saved locally on this device only.</p>
-                        <div id="dNewForm">
-                            <div class="fld"><label class="lbl" for="dEmail" data-i18n="common.email">Email</label><input class="field" type="email" id="dEmail" placeholder="example@mail.com" spellcheck="false"></div>
-                            <div class="fld"><label class="lbl" for="dPass" data-i18n="common.password">Password</label><input class="field" type="password" id="dPass" placeholder="••••••••"></div>
-                            <button class="act" id="dSaveLogin" data-i18n="discord.btn_save_login">Save &amp; Login</button>
-                            <button class="act plain" id="dSkip" data-i18n="discord.btn_skip">Continue without saving</button>
-                        </div>
-                        <div id="dSavedForm" style="display:none;">
-                            <div class="saved"><span class="k" data-i18n="discord.saved_email_label">Account</span><strong id="dSavedEmail"></strong></div>
-                            <button class="act" id="dUseSaved" data-i18n="discord.btn_use_saved">Use saved account</button>
-                            <button class="act plain" id="dSkipSaved" data-i18n="discord.btn_skip_saved">Use different account</button>
-                            <button class="act danger" id="dDeleteSaved" data-i18n="discord.btn_delete_saved">Forget saved credentials</button>
-                        </div>
-                        <div id="dLoader"><i></i><span data-i18n="discord.loader_text">Securing connection…</span></div>
-                    </div>
-                </div>
-                <webview id="discordWebview" src="about:blank" partition="persist:discordPartition" allowpopups="false" webpreferences="contextIsolation=yes,nodeIntegration=no,autoplayPolicy=no-user-gesture-required"></webview>
-            </section>
-
-            <!-- ============ ADVANCED ============ -->
-            <section class="view scroll" id="advancedView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="adv.head">Advanced</span>
-                </div>
-                <div class="pad stack">
-                    <div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="adv.failover_title">Auto failover</h4><p id="failoverHint" data-i18n="adv.failover_desc">Rotate through recommended profiles if Discord becomes unreachable.</p></span>
-                            <label class="sw"><input type="checkbox" id="failoverToggle"><span class="bead"></span></label>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="adv.trmaster_title">Turkey blocked-list</h4><p id="trMasterCount" data-i18n="adv.trmaster_desc">Bundled list of Türkiye-blocked domains.</p></span>
-                            <label class="sw"><input type="checkbox" id="trMasterToggle"><span class="bead"></span></label>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="builder.adv_title">Custom profile builder</h4><p data-i18n="builder.adv_desc">Build, clone, import and share your own DPI profiles.</p></span>
-                            <button class="act plain sm" id="btnOpenBuilder" data-i18n="builder.open">Open</button>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="proxy.adv_title">Proxy bridge</h4><p data-i18n="proxy.adv_desc">Share Tor with other apps as SOCKS/HTTP, or a PAC file.</p></span>
-                            <button class="act plain sm" id="btnOpenProxy" data-i18n="proxy.open">Open</button>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="bridges.adv_title">Tor bridges</h4><p data-i18n="bridges.adv_desc">Pluggable transports (obfs4 / snowflake) for when Tor is blocked.</p></span>
-                            <button class="act plain sm" id="btnOpenBridges" data-i18n="bridges.open">Open</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="band-label" data-i18n="adv.whitelist_title">Whitelist</div>
-                        <p class="small" style="margin:var(--s2) 0 var(--s3);" data-i18n="adv.whitelist_desc">One domain per line. These get DPI bypass treatment.</p>
-                        <textarea id="whitelistInput" spellcheck="false"></textarea>
-                        <div style="margin-top:var(--s3);display:flex;align-items:center;gap:var(--s3);">
-                            <button class="act plain sm" id="btnSaveWhitelist" data-i18n="adv.save">Save</button>
-                            <span class="tiny" id="saveToast" style="display:none;color:var(--ok-lit);" data-i18n="adv.saved">Saved</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ PROFILE BUILDER ============ -->
-            <section class="view scroll" id="builderView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="builder.title">Profile builder</span>
-                    <span class="gap" style="flex:1;"></span>
-                    <button class="act plain sm" id="btnImportProfile" data-i18n="builder.import">Import</button>
-                </div>
-                <div class="pad stack">
-                    <div class="fld">
-                        <label class="lbl" data-i18n="builder.name">Profile name</label>
-                        <input class="field" id="bpName" spellcheck="false" data-i18n-placeholder="builder.name_ph">
-                    </div>
-                    <div class="fld">
-                        <label class="lbl" data-i18n="builder.clone">Start from an existing profile</label>
-                        <div style="display:flex;gap:var(--s3);">
-                            <select class="field" id="bpClone" style="flex:1;"></select>
-                            <button class="act plain sm" id="btnCloneLoad" data-i18n="builder.load">Load</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="band-label" data-i18n="builder.quick_add">Quick add</div>
-                        <p class="small" style="margin:var(--s2) 0 var(--s3);" data-i18n="builder.quick_add_desc">Click to append a flag. Use “new chain” to start a separate filter block.</p>
-                        <div class="chips" id="bpChips"></div>
-                    </div>
-                    <div class="fld">
-                        <label class="lbl" data-i18n="builder.args">Arguments (one per line)</label>
-                        <textarea id="bpArgs" spellcheck="false" style="min-height:150px;font-family:var(--mono);font-size:12px;"></textarea>
-                    </div>
-                    <div class="bp-summary" id="bpSummary"><b id="bpSummaryTitle">—</b><span id="bpSummaryText"></span></div>
-                    <div style="display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;">
-                        <button class="act sm" id="btnSaveUseProfile" data-i18n="builder.save_use">Save &amp; use</button>
-                        <button class="act plain sm" id="btnSaveProfile" data-i18n="builder.save">Save</button>
-                        <button class="act plain sm" id="btnExportProfile" data-i18n="builder.export">Export</button>
-                        <button class="act danger sm" id="btnDeleteProfile" data-i18n="builder.delete" style="display:none;">Delete</button>
-                        <span class="tiny" id="bpStatus"></span>
-                    </div>
-                    <div>
-                        <div class="band-label" data-i18n="builder.saved">My profiles</div>
-                        <div id="bpList"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ TOR BRIDGES ============ -->
-            <section class="view scroll" id="bridgesView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="bridges.title">Tor bridges</span>
-                    <span class="gap" style="flex:1;"></span>
-                    <span class="tiny num" id="brStatus"></span>
-                </div>
-                <div class="pad stack">
-                    <p class="small" data-i18n="bridges.intro">Use pluggable transports when Tor itself is blocked. Needs the transport binary in the app’s tor-bin folder.</p>
-                    <div class="row">
-                        <span class="rt"><h4 data-i18n="bridges.enable">Use bridges</h4><p data-i18n="bridges.enable_desc">Route Tor through a pluggable transport.</p></span>
-                        <label class="sw"><input type="checkbox" id="brEnable"><span class="bead"></span></label>
-                    </div>
-                    <div class="fld">
-                        <label class="lbl" data-i18n="bridges.transport">Transport</label>
-                        <div class="pick" id="brTransport">
-                            <button data-t="obfs4">obfs4</button>
-                            <button data-t="snowflake">snowflake</button>
-                        </div>
-                        <span class="tiny" id="brAvail" style="display:block;margin-top:var(--s2);"></span>
-                    </div>
-                    <div class="fld">
-                        <label class="lbl" data-i18n="bridges.lines">Bridge lines</label>
-                        <p class="small" style="margin:var(--s2) 0;" data-i18n="bridges.lines_desc">One per line, from bridges.torproject.org or Tor Browser. Snowflake needs its one bridge line too.</p>
-                        <textarea id="brLines" spellcheck="false" style="min-height:120px;font-family:var(--mono);font-size:12px;" data-i18n-placeholder="bridges.lines_ph"></textarea>
-                    </div>
-                    <div style="display:flex;gap:var(--s3);flex-wrap:wrap;align-items:center;">
-                        <button class="act sm" id="btnBridgeSave" data-i18n="bridges.save">Save</button>
-                        <button class="act plain sm" id="btnBridgeRestart" data-i18n="bridges.restart">Save &amp; restart Tor</button>
-                        <span class="tiny" id="brSaveStatus"></span>
-                    </div>
-                    <div class="bp-summary" id="brHelp">
-                        <b data-i18n="bridges.help_title">Where to get the files</b>
-                        <span data-i18n="bridges.help_body">Copy obfs4proxy.exe (or lyrebird.exe) and snowflake-client.exe from Tor Browser’s PluggableTransports folder into this app’s tor-bin folder.</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ PROXY BRIDGE ============ -->
-            <section class="view scroll" id="proxyView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="proxy.title">Proxy bridge</span>
-                    <span class="gap" style="flex:1;"></span>
-                    <span class="tiny num" id="pxTor"></span>
-                </div>
-                <div class="pad stack">
-                    <p class="small" data-i18n="proxy.intro">Route other apps through Tor — point them at one of these endpoints.</p>
-                    <div class="row">
-                        <span class="rt"><h4 data-i18n="proxy.tor_status">Tor circuit</h4><p id="pxTorSub" data-i18n="home.tor_idle">Idle</p></span>
-                        <button class="act plain sm" id="btnProxyStartTor" data-i18n="proxy.start_tor">Start Tor</button>
-                    </div>
-                    <div>
-                        <div class="band-label" data-i18n="proxy.socks">SOCKS5 (recommended)</div>
-                        <p class="small" style="margin:var(--s2) 0;" data-i18n="proxy.socks_desc">Best for browsers and SOCKS-aware apps. DNS resolves through Tor.</p>
-                        <div class="ep"><code id="pxSocks">127.0.0.1:9050</code><button class="act plain sm" id="btnCopySocks" data-i18n="proxy.copy">Copy</button></div>
-                    </div>
-                    <div>
-                        <div class="band-label" data-i18n="proxy.http">HTTP proxy</div>
-                        <p class="small" style="margin:var(--s2) 0;" data-i18n="proxy.http_desc">For apps that only accept an HTTP proxy. Tunnels through Tor.</p>
-                        <div class="ep"><code id="pxHttp">127.0.0.1:9080</code><button class="act plain sm" id="btnCopyHttp" data-i18n="proxy.copy">Copy</button><button class="act sm" id="btnToggleHttp" data-i18n="proxy.enable">Enable</button></div>
-                        <span class="tiny" id="pxHttpStatus" style="display:block;margin-top:var(--s2);"></span>
-                    </div>
-                    <div>
-                        <div class="band-label" data-i18n="proxy.pac">PAC file</div>
-                        <p class="small" style="margin:var(--s2) 0;" data-i18n="proxy.pac_desc">Point Windows or your browser’s automatic proxy config at this file.</p>
-                        <div class="ep"><code id="pxPac" style="word-break:break-all;">—</code><button class="act plain sm" id="btnCopyPac" data-i18n="proxy.copy">Copy</button><button class="act sm" id="btnGenPac" data-i18n="proxy.generate">Generate</button></div>
-                        <span class="tiny" id="pxPacStatus" style="display:block;margin-top:var(--s2);"></span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ SETTINGS ============ -->
-            <!-- ============ STATS ============ -->
-            <section class="view scroll" id="statsView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="stats.title">Statistics</span>
-                    <span class="gap" style="flex:1;"></span>
-                    <button class="act plain sm" id="btnResetStats" data-i18n="stats.reset">Reset</button>
-                </div>
-                <div class="pad stack">
-                    <div class="reads" style="border:1px solid var(--selvedge);">
-                        <div class="read"><div class="read-top"><span class="t" data-i18n="stats.uptime">Uptime</span></div><div class="read-val" id="stUptime">—</div><div class="read-sub" id="stUptimeSub"></div></div>
-                        <div class="read"><div class="read-top"><span class="t" data-i18n="stats.total_runtime">Total runtime</span></div><div class="read-val" id="stRuntime">—</div><div class="read-sub" id="stSessions"></div></div>
-                        <div class="read"><div class="read-top"><span class="t" data-i18n="stats.success">Success</span></div><div class="read-val" id="stSuccess">—</div><div class="read-sub" id="stProbes"></div></div>
-                        <div class="read"><div class="read-top"><span class="t" data-i18n="stats.failovers">Failovers</span></div><div class="read-val" id="stFailovers">—</div><div class="read-sub" data-i18n="stats.rotations">rotations</div></div>
-                    </div>
-                    <div>
-                        <div class="stat-h" data-i18n="stats.timeline">Health timeline</div>
-                        <div class="spark" id="stSpark"></div>
-                    </div>
-                    <div>
-                        <div class="stat-h" data-i18n="stats.by_profile">By profile</div>
-                        <div id="stProfiles"></div>
-                    </div>
-                    <div>
-                        <div class="stat-h" data-i18n="stats.failover_history">Failover history</div>
-                        <div id="stFailoverList"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ============ SUPPORT ============ -->
-            <section class="view scroll" id="donateView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="donate.title">Support</span>
-                    <span class="gap" style="flex:1;"></span>
-                    <span class="tag cold" data-i18n="donate.tag">Bitcoin</span>
-                </div>
-                <div class="pad stack">
-                    <p class="small" data-i18n="donate.intro">BurnedWolf is free, has no accounts, no ads and no tracking, and it stays that way. If it got your connection working, a donation covers what running it costs.</p>
-                    <div class="dono">
-                        <span class="qr"><img src="./donate-qr.svg" alt="" draggable="false"></span>
-                        <span class="side">
-                            <span>
-                                <div class="band-label" data-i18n="donate.address_label">Bitcoin address</div>
-                                <p class="tiny" style="margin:var(--s2) 0;" data-i18n="donate.address_hint">Scan the code with your wallet, or copy the address below. Bitcoin mainnet, native SegWit (bech32).</p>
-                            </span>
-                            <code class="addr" id="donateAddr">—</code>
-                            <span class="dono-acts">
-                                <button class="act sm" id="btnDonateCopy" data-i18n="donate.copy">Copy address</button>
-                                <button class="act plain sm" id="btnDonateWallet" data-i18n="donate.open_wallet">Open in wallet</button>
-                                <span class="said" id="donateSaid"></span>
-                            </span>
-                        </span>
-                    </div>
-                    <div>
-                        <div class="band-label" data-i18n="donate.what_label">Where it goes</div>
-                        <p class="small" style="margin-top:var(--s2);" data-i18n="donate.what">Server and bandwidth for the update channel and the domain lists, the code-signing certificate, and the hours that go into keeping the DPI profiles working after each block. Nothing in the app is gated behind a donation — every feature is on for everyone, whether you send anything or not.</p>
-                    </div>
-                    <p class="dono-note" data-i18n="donate.disclaimer">Donations are voluntary and not refundable — a Bitcoin transaction cannot be reversed. Check the address before you send: it should match the one shown here character for character.</p>
-                </div>
-            </section>
-
-            <section class="view scroll" id="settingsView" hidden>
-                <div class="sub">
-                    <button class="back nav-back"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
-                    <span class="ttl" data-i18n="home.settings">Settings</span>
-                </div>
-                <div class="pad stack">
-                    <div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="titlebar.run_on_startup">Run on startup</h4><p data-i18n="titlebar.run_on_startup_desc">Start automatically when Windows boots.</p></span>
-                            <label class="sw"><input type="checkbox" id="autoStartToggle"><span class="bead"></span></label>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="titlebar.auto_updates">Automatic updates</h4><p data-i18n="titlebar.auto_updates_desc">Check for updates every launch.</p></span>
-                            <label class="sw"><input type="checkbox" id="autoUpdateToggle"><span class="bead"></span></label>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="settings.update_notes">Update notes on launch</h4><p data-i18n="settings.update_notes_desc">Show the changelog when the app opens.</p></span>
-                            <label class="sw"><input type="checkbox" id="updateNotesToggle"><span class="bead"></span></label>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="settings.check_updates">Check for updates</h4><p data-i18n="settings.check_updates_desc">Look for a newer version right now.</p></span>
-                            <span style="display:inline-flex;align-items:center;gap:10px;">
-                                <span class="tiny num" id="checkUpdateStatus"></span>
-                                <button class="act sm" id="btnInstallUpdate" data-i18n="settings.install_now" hidden>Install now</button>
-                                <button class="act plain sm" id="btnCheckUpdate" data-i18n="settings.check_now">Check now</button>
-                            </span>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="settings.backup">Backup &amp; restore</h4><p data-i18n="settings.backup_desc">Export your settings and whitelist to a file, or import them back.</p></span>
-                            <span style="display:inline-flex;align-items:center;gap:10px;">
-                                <span class="tiny num" id="backupStatus"></span>
-                                <button class="act plain sm" id="btnImportConfig" data-i18n="settings.import">Import</button>
-                                <button class="act plain sm" id="btnExportConfig" data-i18n="settings.export">Export</button>
-                            </span>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="titlebar.language">Language</h4><p data-i18n="titlebar.language_desc">Applies instantly to every screen.</p></span>
-                            <div class="pick">
-                                <button class="lang-pill" data-lang="en">EN</button>
-                                <button class="lang-pill" data-lang="tr">TR</button>
-                                <button class="lang-pill" data-lang="ru">RU</button>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="ai.settings_row">BurnedWolf AI</h4><p data-i18n="ai.settings_row_desc">Provider, model, API keys and usage limits.</p></span>
-                            <button class="act plain sm" id="btnOpenAiSettings" data-i18n="ai.configure">Configure</button>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="donate.settings_row">Support BurnedWolf</h4><p data-i18n="donate.settings_row_desc">Show the donation screen when the app opens. It is always reachable from the rail.</p></span>
-                            <span style="display:inline-flex;align-items:center;gap:10px;">
-                                <button class="act plain sm" id="btnOpenDonate" data-i18n="donate.open">Open</button>
-                                <label class="sw"><input type="checkbox" id="donateToggle"><span class="bead"></span></label>
-                            </span>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4>BurnedWolf online</h4><p>Downloads, release notes and open-source code live on the official WhyScripts page.</p></span>
-                            <span class="product-links">
-                                <button class="act plain sm" id="btnOpenWebsite">Website</button>
-                                <button class="act plain sm" id="btnOpenSource">Source</button>
-                            </span>
-                        </div>
-                        <div class="row">
-                            <span class="rt"><h4 data-i18n="titlebar.current_build">Current build</h4><p class="product-signature">a whyscripts.com project</p></span>
-                            <span class="num tiny" id="versionDisplay">—</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </div>
-    </div>
-
-    <!-- ============ UPDATE NOTES ============ -->
-    <div class="over" id="notesOverlay">
-        <div class="sheet">
-            <div class="sheet-top">
-                <h3 class="h3" data-i18n="notes.title">What's new</h3>
-                <span class="gap" style="flex:1;"></span>
-                <span class="tiny num" id="notesVersion"></span>
-                <button class="ibtn" id="notesClose"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            </div>
-            <div class="sheet-body" id="notesBody"></div>
-        </div>
-    </div>
-
-    <!-- ============ SUPPORT (launch) ============ -->
-    <!-- Same content as donateView, sized for a sheet. Shown after the update
-         notes close, never on top of them, and never twice in one session. -->
-    <div class="over" id="donateOverlay">
-        <div class="sheet">
-            <div class="sheet-top">
-                <h3 class="h3" data-i18n="donate.sheet_title">Support BurnedWolf</h3>
-                <span class="gap" style="flex:1;"></span>
-                <span class="tag cold" data-i18n="donate.tag">Bitcoin</span>
-                <button class="ibtn" id="donateClose" data-i18n-title="donate.later"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            </div>
-            <div class="sheet-body">
-                <p class="small" data-i18n="donate.sheet_intro">BurnedWolf is free — no accounts, no ads, no tracking. If it got your connection working, a donation covers what running it costs.</p>
-                <div class="dono" style="margin-top:var(--s4);">
-                    <span class="qr"><img src="./donate-qr.svg" alt="" draggable="false"></span>
-                    <span class="side">
-                        <span>
-                            <div class="band-label" data-i18n="donate.address_label">Bitcoin address</div>
-                            <p class="tiny" style="margin:var(--s2) 0;" data-i18n="donate.address_hint">Scan the code with your wallet, or copy the address below. Bitcoin mainnet, native SegWit (bech32).</p>
-                        </span>
-                        <code class="addr" id="donateAddr2">—</code>
-                        <span class="dono-acts">
-                            <button class="act sm" id="btnDonateCopy2" data-i18n="donate.copy">Copy address</button>
-                            <button class="act plain sm" id="btnDonateWallet2" data-i18n="donate.open_wallet">Open in wallet</button>
-                            <span class="said" id="donateSaid2"></span>
-                        </span>
-                    </span>
-                </div>
-                <div class="dono-acts" style="margin-top:var(--s5);padding-top:var(--s3);border-top:1px solid var(--selvedge);">
-                    <button class="act quiet sm" id="btnDonateLater" data-i18n="donate.later">Not now</button>
-                    <button class="link" id="btnDonateNever" data-i18n="donate.never">Don't show this again</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============ BOOT ============ -->
-    <div class="boot" id="bootScreen">
-        <div class="boot-brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M18 19h7l7 17 7-17h7L35 46h-6z" fill="#fff"></path></svg></div>
-        <canvas id="bootLoom"></canvas>
-        <div class="bw">BurnedWolf</div>
-        <div class="bs" data-boot-status data-i18n="boot.init">Initialising…</div>
-        <div class="meter" id="bootMeter"></div>
-    </div>
-
+<section class="view scroll" hidden="" id="settingsView">
+<div class="sub">
+<button class="back nav-back"><svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M15 5 L8 12 L15 19"></path></svg><span data-i18n="home.back">Back</span></button>
+<span class="ttl" data-i18n="home.settings">Settings</span>
+</div>
+<div class="pad stack">
+<div>
+<div class="row">
+<span class="rt"><h4 data-i18n="titlebar.run_on_startup">Run on startup</h4><p data-i18n="titlebar.run_on_startup_desc">Start automatically when Windows boots.</p></span>
+<label class="sw"><input id="autoStartToggle" type="checkbox"/><span class="bead"></span></label>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="titlebar.auto_updates">Automatic updates</h4><p data-i18n="titlebar.auto_updates_desc">Check for updates every launch.</p></span>
+<label class="sw"><input id="autoUpdateToggle" type="checkbox"/><span class="bead"></span></label>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="settings.update_notes">Update notes on launch</h4><p data-i18n="settings.update_notes_desc">Show the changelog when the app opens.</p></span>
+<label class="sw"><input id="updateNotesToggle" type="checkbox"/><span class="bead"></span></label>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="settings.check_updates">Check for updates</h4><p data-i18n="settings.check_updates_desc">Look for a newer version right now.</p></span>
+<span style="display:inline-flex;align-items:center;gap:10px;">
+<span class="tiny num" id="checkUpdateStatus"></span>
+<button class="act sm" data-i18n="settings.install_now" hidden="" id="btnInstallUpdate">Install now</button>
+<button class="act plain sm" data-i18n="settings.check_now" id="btnCheckUpdate">Check now</button>
+</span>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="settings.backup">Backup &amp; restore</h4><p data-i18n="settings.backup_desc">Export your settings and whitelist to a file, or import them back.</p></span>
+<span style="display:inline-flex;align-items:center;gap:10px;">
+<span class="tiny num" id="backupStatus"></span>
+<button class="act plain sm" data-i18n="settings.import" id="btnImportConfig">Import</button>
+<button class="act plain sm" data-i18n="settings.export" id="btnExportConfig">Export</button>
+</span>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="titlebar.language">Language</h4><p data-i18n="titlebar.language_desc">Applies instantly to every screen.</p></span>
+<div class="pick">
+<button class="lang-pill" data-lang="en">EN</button>
+<button class="lang-pill" data-lang="tr">TR</button>
+<button class="lang-pill" data-lang="ru">RU</button>
+</div>
 </div>
 
+
+<div class="row">
+<span class="rt"><h4>BurnedWolf online</h4><p>Downloads, source code and service status live on WhyScripts.</p></span>
+<span class="product-links">
+<button class="act plain sm" id="btnOpenWebsite">Website</button>
+<button class="act plain sm" id="btnOpenSource">Source</button>
+</span>
+</div>
+<div class="row">
+<span class="rt"><h4 data-i18n="titlebar.current_build">Current build</h4><p class="product-signature">a whyscripts.com project</p></span>
+<span class="num tiny" id="versionDisplay">—</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- ============ UPDATE NOTES ============ -->
+<div class="over" id="notesOverlay">
+<div class="sheet">
+<div class="sheet-top">
+<h3 class="h3" data-i18n="notes.title">What's new</h3>
+<span class="gap" style="flex:1;"></span>
+<span class="tiny num" id="notesVersion"></span>
+<button class="ibtn" id="notesClose"><svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg></button>
+</div>
+<div class="sheet-body" id="notesBody"></div>
+</div>
+</div>
+<!-- ============ BOOT ============ -->
+<div class="boot" id="bootScreen">
+<div aria-hidden="true" class="boot-brand-mark"><svg viewbox="0 0 64 64"><path d="M18 19h7l7 17 7-17h7L35 46h-6z" fill="#fff"></path></svg></div>
+<canvas id="bootLoom"></canvas>
+<div class="bw">BurnedWolf</div>
+<div class="bs" data-boot-status="" data-i18n="boot.init">Initialising…</div>
+<div class="meter" id="bootMeter"></div>
+</div>
+</div>
 <script src="./loom.js"></script>
 <script src="./titlebar.js"></script>
 </body>

@@ -9,8 +9,8 @@ const ROOT = path.join(__dirname, '..', '..');
 
 const OFFICIAL_APP_NAME = "BurnedWolf";
 // Must match the "version" field in the update manifest that ships alongside the
-// published app.asar — the updater treats ANY difference as "update available".
-const CURRENT_VERSION = "4.0.0";
+// published app.asar — the updater installs only a strictly newer semantic version.
+const CURRENT_VERSION = "4.6.0";
 
 // Default update manifest. The updater swaps this for the real archive URL
 // once `check-update` has parsed version.json (see updater.js).

@@ -1,10 +1,8 @@
 // ==========================================
 // --- WINDOW + TRAY LIFECYCLE ---
 // ==========================================
-// Owns every BurnedWolf window. The main window (titlebar) is the whole app now:
-// DPI control, analysis and DNS all live inside it. Discord and Verify stay as
-// their own windows (a heavy webview and a distinct repair flow) and are opened
-// through the open-*-window IPC channels; the tray menu reuses the same functions.
+// Owns the BurnedWolf utility window and primary tray. BurnedCord has its own
+// window + tray lifecycle in burnedcord.js and is launched from here lazily.
 const { app, BrowserWindow, Tray, Menu, ipcMain, screen } = require('electron');
 const path = require('path');
 const { ROOT, CURRENT_VERSION } = require('./constants');
@@ -24,8 +22,6 @@ let onboardingWindow = null;
 // gets a working layout instead of a clipped one.
 const NORMAL_SIZE  = { w: 1000, h: 700 };
 const NORMAL_MIN   = { w: 880,  h: 620 };
-const DISCORD_SIZE = { w: 1200, h: 820 };
-const DISCORD_MIN  = { w: 900,  h: 640 };
 
 // ==========================================
 // --- UNIVERSAL STEALTH TRAY SYSTEM ---
@@ -133,7 +129,8 @@ function showMainFromTray() {
 
 function buildTrayMenu() {
     const items = [
-        { label: 'Show BurnedWolf', click: showMainFromTray }
+        { label: 'Show BurnedWolf', click: showMainFromTray },
+        { label: 'Open BurnedCord', click: () => { try { require('./burnedcord').openBurnedCord(); } catch (e) {} } }
     ];
     if (pendingUpdateInfo && pendingUpdateInfo.new) {
         items.push({ type: 'separator' });
@@ -258,27 +255,6 @@ ipcMain.on('maximize-window', () => { if (win.isMaximized()) win.unmaximize(); e
 ipcMain.on('completely-exit', () => attemptExit());
 ipcMain.on('exit-no', () => { if (exitWindow) exitWindow.close(); if (win) win.webContents.send('exit-cancelled'); });
 
-// Discord and File Integrity now render INSIDE the main window as views (see
-// renderer/titlebar). The Discord view embeds a full webview, so the renderer
-// asks us to grow the window when it opens and shrink back when it leaves.
-ipcMain.on('set-window-mode', (event, mode) => {
-    if (!win || win.isDestroyed()) return;
-    const s = mode === 'discord' ? DISCORD_SIZE : NORMAL_SIZE;
-    const min = mode === 'discord' ? DISCORD_MIN : NORMAL_MIN;
-    try {
-        // Relax the floor before growing, tighten it after shrinking, so setSize
-        // is never clamped by a stale minimum. Only grow the window when the
-        // user is actually smaller than the target — resizing someone's
-        // deliberately enlarged window back down is hostile.
-        win.setMinimumSize(Math.min(min.w, s.w), Math.min(min.h, s.h));
-        const [cw, ch] = win.getSize();
-        if (cw < s.w || ch < s.h) {
-            win.setSize(Math.max(cw, s.w), Math.max(ch, s.h));
-            win.center();
-        }
-        win.setMinimumSize(min.w, min.h);
-    } catch (e) {}
-});
 
 module.exports = {
     createMainWindow,

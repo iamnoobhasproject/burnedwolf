@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8"/>
 <title>BurnedWolf — Welcome</title>
-<link rel="stylesheet" href="renderer/weave.css">
+<link href="renderer/weave.css" rel="stylesheet"/>
 <style>
 body { display: flex; -webkit-app-region: drag; }
 .top { display: flex; align-items: center; justify-content: space-between; padding: var(--s3) var(--s5); border-bottom: 1px solid var(--selvedge); flex-shrink: 0; }
@@ -36,58 +37,46 @@ body { display: flex; -webkit-app-region: drag; }
 .go { width: 100%; max-width: 280px; }
 .foot { padding: var(--s2) var(--s5); border-top: 1px solid var(--selvedge); font-size: 10.5px; color: var(--ink-3); text-align: center; flex-shrink: 0; }
 </style>
-<link rel="stylesheet" href="renderer/whyscripts.css">
+<link href="renderer/whyscripts.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="cloth">
-    <div class="top">
-        <span class="mk">
-            <svg class="g" viewBox="0 0 64 64" aria-hidden="true"><path d="M18 19h7l7 17 7-17h7L35 46h-6z" fill="currentColor"></path></svg>
-            <span class="n">BurnedWolf</span>
-        </span>
-        <span class="zone" id="stepIndicator">Step 1 of 3</span>
-    </div>
-
-    <div class="stage">
-        <!-- 1 · language -->
-        <div class="step on" id="step-language">
-            <h2 class="h2" id="langTitle">Choose your language</h2>
-            <p class="why" id="langWhy">Pick the language you want BurnedWolf to use. You can change it later in settings.</p>
-            <!-- Each language names itself in its own script. Flag emoji were doing
+<div class="top">
+<span class="mk">
+<svg aria-hidden="true" class="g" viewbox="0 0 64 64"><path d="M18 19h7l7 17 7-17h7L35 46h-6z" fill="currentColor"></path></svg>
+<span class="n">BurnedWolf</span>
+</span>
+<span class="zone" id="stepIndicator">Step 1 of 3</span>
+</div>
+<div class="stage">
+<!-- 1 · language -->
+<div class="step on" id="step-language">
+<h2 class="h2" id="langTitle">Choose your language</h2>
+<p class="why" id="langWhy">Pick the language you want BurnedWolf to use. You can change it later in settings.</p>
+<!-- Each language names itself in its own script. Flag emoji were doing
                  this job before: they render differently on every machine, and a
                  flag is a country, not a language. -->
-            <div class="langs">
-                <button class="lang" data-lang="en"><span class="nat">English</span><span class="code">EN</span></button>
-                <button class="lang" data-lang="tr"><span class="nat">Türkçe</span><span class="code">TR</span></button>
-                <button class="lang" data-lang="ru"><span class="nat">Русский</span><span class="code">RU</span></button>
-            </div>
-            <button class="act go" id="btnLangNext" disabled>Continue</button>
-        </div>
+<div class="langs">
+<button class="lang" data-lang="en"><span class="nat">English</span><span class="code">EN</span></button>
+<button class="lang" data-lang="tr"><span class="nat">Türkçe</span><span class="code">TR</span></button>
+<button class="lang" data-lang="ru"><span class="nat">Русский</span><span class="code">RU</span></button>
+</div>
+<button class="act go" disabled="" id="btnLangNext">Continue</button>
+</div>
+<!-- 2 · updates -->
+<div class="step" id="step-update">
+<h2 class="h2" id="updateTitle">Automatic updates</h2>
+<p class="why" id="updateSubtitle">Should BurnedWolf check for updates on every launch?</p>
+<div class="picks">
+<button class="choice" data-update="yes"><b id="updateYesName">Yes, enable</b><span id="updateYesDesc">Recommended. Always run the latest fixes.</span></button>
+<button class="choice" data-update="no"><b id="updateNoName">No, skip</b><span id="updateNoDesc">Skip the check at startup. You can still update manually.</span></button>
+</div>
+<button class="act go" disabled="" id="btnUpdateFinish">Get started</button>
+</div>
+<!-- 3 · AI -->
 
-        <!-- 2 · updates -->
-        <div class="step" id="step-update">
-            <h2 class="h2" id="updateTitle">Automatic updates</h2>
-            <p class="why" id="updateSubtitle">Should BurnedWolf check for updates on every launch?</p>
-            <div class="picks">
-                <button class="choice" data-update="yes"><b id="updateYesName">Yes, enable</b><span id="updateYesDesc">Recommended. Always run the latest fixes.</span></button>
-                <button class="choice" data-update="no"><b id="updateNoName">No, skip</b><span id="updateNoDesc">Skip the check at startup. You can still update manually.</span></button>
-            </div>
-            <button class="act go" id="btnUpdateNext" disabled>Continue</button>
-        </div>
-
-        <!-- 3 · AI -->
-        <div class="step" id="step-ai">
-            <h2 class="h2" id="aiTitle">Meet BurnedWolf AI</h2>
-            <p class="why" id="aiSubtitle">Connect any AI provider — several are free — and it will read your connection, pick the right bypass profile and configure the app for you.</p>
-            <div class="picks">
-                <button class="choice" data-ai="yes"><b id="aiYesName">Set it up now</b><span id="aiYesDesc">Opens the provider list once setup finishes.</span></button>
-                <button class="choice" data-ai="no"><b id="aiNoName">Maybe later</b><span id="aiNoDesc">Go straight to the app. The AI tab is always there.</span></button>
-            </div>
-            <button class="act go" id="btnUpdateFinish" disabled>Get started</button>
-        </div>
-    </div>
-
-    <div class="foot" id="footerHint">Welcome to BurnedWolf</div>
+</div>
+<div class="foot" id="footerHint">Welcome to BurnedWolf</div>
 </div>
 <script src="./onboarding.js"></script>
 </body>

@@ -266,7 +266,6 @@ body { font-size:13.5px; letter-spacing:-.006em; }
 .logbar:hover { background:#050608; }
 
 /* AI surface: restrained utility chat rather than a SaaS dashboard */
-.ai-top { background:rgba(3,4,5,.62); border-bottom-color:var(--selvedge); }
 #aiChat { background:transparent; }
 .compose { background:rgba(3,4,5,.7); border-top-color:var(--selvedge); }
 .compose textarea { background:#07080a; }

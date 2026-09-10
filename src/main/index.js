@@ -14,17 +14,13 @@
 //   quit.js             guaranteed full shutdown (cleanup task registry)
 //   dns.js              DNS presets + dnscrypt-proxy + crash-safe restore
 //   tor.js              tor.exe lifecycle
-//   discord.js          Discord partition proxy + media permissions
-//   credentials.js      safeStorage-backed credential store
 //   isp.js              ASN-based ISP detection + recommended profiles
 //   autostart.js        logon scheduled task
 //   updater.js          check/download/apply update pipeline
 //   verify.js           file-integrity download/compare/repair
-//   donate.js           the donation address + its clipboard/wallet handoff
 //   zapret/             DPI engine: paths, profiles, payloads, hostlists,
 //                       engine (start/stop/failover/health), blockcheck
-//   ai/                 BurnedWolf AI: provider catalog, wire protocols,
-//                       live program context, action registry, usage ledger
+//   burnedcord.js       separate BurnedCord window + tray + desktop bridge
 const { app, ipcMain, powerSaveBlocker } = require('electron');
 const { OFFICIAL_APP_NAME } = require('./constants');
 
@@ -37,6 +33,11 @@ app.setName(OFFICIAL_APP_NAME);
 app.commandLine.appendSwitch('disable-gpu-shader-disk-cache');
 app.commandLine.appendSwitch('disable-http-cache');
 app.commandLine.appendSwitch('disable-gpu-program-cache');
+// BurnedCord is a voice app. Allow remote audio elements/Web Audio to start
+// when a WebRTC track arrives after the room-join network round trip. The
+// BrowserWindow `autoplayPolicy` field is not a supported webPreference on the
+// Electron version used by this project, so set Chromium's policy here instead.
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
 // Domain modules — required for their side effects (IPC registration).
 const settings = require('./settings');
@@ -44,24 +45,18 @@ const windows = require('./windows');
 const quit = require('./quit');
 const dns = require('./dns');
 const tor = require('./tor');
-require('./discord');
-require('./credentials');
 require('./isp');
 require('./autostart');
 const updater = require('./updater');
 require('./verify');
 require('./backup');
-require('./donate');
 const proxy = require('./proxy');
 const hostlists = require('./zapret/hostlists');
 const payloads = require('./zapret/payloads');
 require('./zapret/profiles');
 const engine = require('./zapret/engine');
 require('./zapret/blockcheck');
-// BurnedWolf AI — loaded last so its context builder can lazily reach every
-// module above. Registers the ai-* IPC surface; costs nothing until the user
-// configures a provider.
-require('./ai');
+require('./burnedcord');
 
 powerSaveBlocker.start('prevent-app-suspension');
 

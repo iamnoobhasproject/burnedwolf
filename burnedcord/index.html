@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="#000000" name="theme-color"/>
+<meta content="dark" name="color-scheme"/>
+<title>BurnedCord · whyscripts.com</title>
+<link href="./css/app.css" rel="stylesheet"/>
+</head>
+<body>
+<header aria-label="BurnedCord window controls" class="desktop-titlebar">
+<div class="desktop-title-brand"><span class="cord-mark">bc</span><strong>BurnedCord</strong><span>whyscripts.com</span></div>
+<div class="desktop-window-controls">
+<button aria-label="Minimize" data-window-action="minimize" type="button">—</button>
+<button aria-label="Maximize" data-window-action="maximize" type="button">□</button>
+<button aria-label="Close to tray" class="window-close" data-window-action="close" type="button">×</button>
+</div>
+</header><main class="app-shell" id="app">
+<section class="auth-view hidden" id="authView">
+<header class="auth-topbar">
+<div aria-label="BurnedCord" class="brand"><strong>BurnedCord</strong></div>
+<span class="brand-line">by whyscripts.com</span>
+</header>
+<div class="auth-stage">
+<div class="brand-card">
+<div class="eyebrow">VOICE · CAMERA · SCREEN</div>
+<h1><span>Talk privately.</span><em>Your PC carries the room.</em></h1>
+<p>Voice, camera and screen sharing in private invite-only rooms. BurnedCord handles the meeting UI while the room owner remains the media host whenever the connection allows it.</p>
+</div>
+<div class="auth-card">
+<div aria-label="Account" class="tabs" role="tablist">
+<button class="tab active" data-auth-tab="login" type="button">Sign in</button>
+<button class="tab" data-auth-tab="register" type="button">Create account</button>
+</div>
+<form class="auth-form" id="loginForm">
+<label>Username<input autocomplete="username" maxlength="24" name="username" placeholder="username" required=""/></label>
+<label>Password<input autocomplete="current-password" minlength="8" name="password" placeholder="••••••••" required="" type="password"/></label>
+<button class="primary wide" type="submit">Continue</button>
+</form>
+<form class="auth-form hidden" id="registerForm">
+<label>Username<input autocomplete="username" maxlength="24" name="username" pattern="[A-Za-z0-9_.-]+" placeholder="username" required=""/></label>
+<label>Display name<input autocomplete="nickname" maxlength="32" name="displayName" placeholder="display name" required=""/></label>
+<label>Invite code<input autocomplete="one-time-code" maxlength="32" name="inviteCode" placeholder="WHY-XXXX-XXXX-XXXX-XXXX-XXXX" required=""/></label>
+<label>Password<input autocomplete="new-password" minlength="8" name="password" placeholder="at least 8 characters" required="" type="password"/></label>
+<div class="invite-only-note">New accounts are invite-only. Ask an existing member for a single-use registration code.</div><button class="invite-help-link" id="inviteHelpBtn" type="button">How to get an invite key?</button>
+<button class="primary wide" type="submit">Create account</button>
+</form>
+<div class="inline-error" id="authError"></div>
+</div>
+</div>
+<footer class="auth-footer"><span>© 2026 whyscripts.com</span><span>BurnedCord · voice, camera &amp; screen</span></footer>
+</section>
+<section class="dashboard hidden" id="dashboardView">
+<aside class="sidebar">
+<div class="side-brand">
+<div><strong>BurnedCord</strong><span>by whyscripts.com</span></div>
+</div>
+<button class="primary wide" id="createRoomBtn">Start a room</button>
+<div class="side-section room-side-section">
+<div class="section-title"><span>Rooms</span><button class="icon-btn" id="refreshRoomsBtn" title="Refresh rooms">↻</button></div>
+<div class="room-list" id="roomList"></div>
+</div>
+<div class="side-section">
+<div class="section-title"><span>Friends</span><button class="icon-btn" id="addFriendBtn" title="Add friend">＋</button></div>
+<div class="friend-list" id="friendList"></div>
+</div>
+<div class="profile-row">
+<div class="avatar" id="selfAvatar"></div>
+<div class="profile-copy"><strong id="selfName"></strong><span id="selfUsername"></span></div>
+<button class="icon-btn" id="accountInvitesBtn" title="Registration invite codes">◎</button>
+<button class="icon-btn" id="settingsBtn" title="Audio settings">⌁</button>
+<button class="icon-btn" id="logoutBtn" title="Sign out">↗</button>
+</div>
+</aside>
+<section class="main-panel">
+<div class="home-panel" id="homePanel">
+<header class="home-topbar">
+<span>BURNEDCORD</span>
+<div class="home-top-actions"><span>HOST-CENTRIC WEBRTC · DESKTOP</span></div>
+</header>
+<div class="device-status-bar" id="deviceStatusBar"><span>MIC · detecting</span><span>OUTPUT · detecting</span></div>
+<div class="hero">
+<div class="eyebrow">INVITE ONLY</div>
+<h2><span>Your room.</span><em>Your connection.</em></h2>
+<p>Open a private room and invite the people you want. The WhyScripts service handles accounts and signaling; your PC remains the media host.</p>
+<div class="hero-actions">
+<button class="primary" id="heroCreateBtn">Start private room</button>
+<button class="secondary" id="joinByCodeBtn">Join with invite</button>
+</div>
+</div>
+<div class="recent-rooms" id="recentRooms"></div>
+<div aria-label="Voice features" class="feature-grid">
+<article><small>01</small><strong>Voice first</strong><p>Opus voice, Push-to-Talk, deafen, individual volume and real-time noise suppression.</p></article>
+<article><small>02</small><strong>Camera &amp; screen</strong><p>Choose a display or application window from BurnedCord’s desktop source picker.</p></article>
+<article><small>03</small><strong>Host controls</strong><p>Mute relay, kick, ban and media permissions stay with the room owner.</p></article>
+</div>
+</div>
+<div class="room-panel hidden" id="roomPanel">
+<header class="room-header">
+<div><div class="eyebrow">PRIVATE VOICE ROOM</div><h2 id="roomName">Room</h2><span id="roomMeta"></span></div>
+<div class="room-actions"><button class="secondary" id="inviteBtn">Invite</button><button class="danger-soft" id="leaveRoomBtn">Leave</button></div>
+</header>
+<div class="host-notice hidden" id="hostNotice"></div>
+<div class="ptt-notice hidden" id="pttNotice"></div>
+<div class="media-grid" id="mediaGrid"></div>
+<div class="participant-strip" id="participantStrip"></div>
+<div class="control-dock">
+<button class="control active" id="micBtn" title="Mute / unmute microphone"><span>●</span><small>Mic</small></button>
+<button class="control active" id="deafenBtn" title="Deafen / undeafen"><span>◖</span><small>Sound</small></button>
+<button class="control" id="voiceModeBtn" title="Switch Voice Activity / Push-to-Talk"><span>V</span><small>Voice</small></button>
+<button class="control" id="cameraBtn" title="Camera"><span>□</span><small>Camera</small></button>
+<button class="control" id="screenBtn" title="Share screen"><span>▭</span><small>Share</small></button>
+<button class="control active" id="noiseBtn" title="Noise suppression"><span>≋</span><small>Noise</small></button>
+<button class="control" id="deviceBtn" title="Voice &amp; audio settings"><span>⌁</span><small>Audio</small></button>
+</div>
+</div>
+</section>
+</section>
+</main>
+<div id="modalRoot"></div>
+<div class="invite-tray" id="inviteTray"></div>
+<div class="toast-root" id="toastRoot"></div>
+<script src="./js/app.js?v=4.6.0" type="module"></script>
+</body>
+</html>

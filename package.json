@@ -1,7 +1,7 @@
 {
   "name": "burnedwolf",
-  "version": "4.0.0",
-  "description": "BurnedWolf network utility by whyscripts.com",
+  "version": "4.6.0",
+  "description": "BurnedWolf network utility with integrated BurnedCord by whyscripts.com",
   "author": "whyscripts.com / github.com/iamnoobhasproject",
   "main": "main.js",
   "scripts": {

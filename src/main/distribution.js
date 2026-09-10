@@ -1,12 +1,12 @@
 // BurnedWolf distribution endpoints.
-// Keep public product/update URLs in one place so renderer, updater, AI and
+// Keep public product/update URLs in one place so renderer, updater and
 // integrity repair cannot silently drift onto different release channels.
 const WEBSITE_URL = 'https://burnedwolf.whyscripts.com';
 const SOURCE_URL = 'https://github.com/iamnoobhasproject/burnedwolf';
 const UPDATE_REPO = 'iamnoobhasproject/app-updates-whyscripts';
 const UPDATE_MANIFEST_URL = `https://raw.githubusercontent.com/${UPDATE_REPO}/main/version.json`;
 const CHANGELOG_URL = `https://raw.githubusercontent.com/${UPDATE_REPO}/main/logs.txt`;
-const REPAIR_BUNDLE_URL = `https://github.com/${UPDATE_REPO}/releases/latest/download/net.zip`;
+const REPAIR_BUNDLE_URL = 'https://github.com/iamnoobhasproject/burnedwolf/releases/download/burnedwolf/net.zip';
 
 function parseVersion(value) {
   const m = String(value || '').trim().match(/^v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/);

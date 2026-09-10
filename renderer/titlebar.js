@@ -19,8 +19,6 @@ function repaintDynamic() {
     paintDns();
     paintTor();
     paintHealth();
-    paintAi();
-    paintHints();
 }
 
 // ==========================================
@@ -44,13 +42,12 @@ function meter(el, frac, cells) {
 // ==========================================
 const guard = LOOM.guard($('guardMotif'));
 const bootLoom = LOOM.weave($('bootLoom'), { pps: 11 });
-let usageBars = null;
 
 // ==========================================
 // --- BOOT ---
 // ==========================================
 let booted = false;
-const BOOT_STEPS = [['boot.init', .16], ['boot.engine', .42], ['boot.network', .68], ['boot.ai', .88]];
+const BOOT_STEPS = [['boot.init', .22], ['boot.engine', .55], ['boot.network', .84]];
 i18nReady.then(function runBoot() {
     let i = 0;
     (function tick() {
@@ -78,10 +75,8 @@ setTimeout(finishBoot, 4200);
 // ==========================================
 // --- VIEWS ---
 // ==========================================
-const views = ['homeView', 'aiView', 'aiSetupView', 'aiProviderView', 'aiLimitView', 'aiAuditView',
-    'dnsView', 'analysisView', 'statsView', 'verifyView', 'discordView', 'advancedView', 'builderView', 'proxyView', 'bridgesView', 'donateView', 'settingsView'];
-const RAIL_OF = { aiSetupView: 'aiView', aiProviderView: 'aiView', aiLimitView: 'aiView', aiAuditView: 'aiView', builderView: 'advancedView', proxyView: 'advancedView', bridgesView: 'advancedView' };
-let windowMode = 'normal';
+const views = ['homeView', 'dnsView', 'analysisView', 'statsView', 'verifyView', 'advancedView', 'builderView', 'proxyView', 'bridgesView', 'settingsView'];
+const RAIL_OF = { builderView: 'advancedView', proxyView: 'advancedView', bridgesView: 'advancedView' };
 let currentView = 'homeView';
 
 function showView(id) {
@@ -97,27 +92,18 @@ function showView(id) {
     const target = RAIL_OF[id] || id;
     document.querySelectorAll('.rbtn').forEach(b => b.classList.toggle('on', b.dataset.nav === target));
 
-    const want = id === 'discordView' ? 'discord' : 'normal';
-    if (want !== windowMode) { windowMode = want; ipcRenderer.send('set-window-mode', want); }
-
     if (id === 'dnsView') refreshDns();
     if (id === 'advancedView') reflectFailover();
-    if (id === 'discordView') initDiscord();
-    if (id === 'aiView') scrollChat();
-    if (id === 'aiSetupView') renderProviders();
-    if (id === 'aiLimitView') refreshUsage();
-    if (id === 'aiAuditView') renderAudit();
     if (id === 'statsView') refreshStats();
     if (id === 'builderView') openBuilder();
     if (id === 'proxyView') openProxy();
     if (id === 'bridgesView') openBridges();
-    if (id === 'donateView') paintDonate();
 }
 
 const rail = Array.from(document.querySelectorAll('.rbtn'));
 rail.forEach((b, i) => {
     b.addEventListener('click', () => {
-        if (b.dataset.nav === 'aiView') { openAi(); return; }
+        if (b.id === 'btnBurnedCordRail') { ipcRenderer.send('open-burnedcord'); return; }
         showView(b.dataset.nav);
     });
     b.addEventListener('keydown', (e) => {
@@ -131,13 +117,12 @@ rail.forEach((b, i) => {
 });
 document.querySelectorAll('.nav-back').forEach(b => b.addEventListener('click', () => showView('homeView')));
 $('cardDns').addEventListener('click', () => showView('dnsView'));
-$('cardDiscord').addEventListener('click', () => showView('discordView'));
+$('cardBurnedCord').addEventListener('click', () => ipcRenderer.send('open-burnedcord'));
 $('cardHealth').addEventListener('click', () => showView('analysisView'));
-$('cardAi').addEventListener('click', () => openAi());
+$('cardIntegrity').addEventListener('click', () => showView('verifyView'));
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        if ($('donateOverlay').classList.contains('show')) { closeDonate(); return; }
         if ($('notesOverlay').classList.contains('show')) { closeNotes(); return; }
         if (currentView !== 'homeView') showView('homeView');
     }
@@ -467,13 +452,10 @@ $('btnFixResidue2').addEventListener('click', (e) => runFix(e.currentTarget));
 })();
 
 // ==========================================
-// --- TOR / DISCORD readout ---
+// --- TOR readout (advanced proxy tools only) ---
 // ==========================================
 let torReady = false;
-function paintTor() {
-    $('torSub').textContent = i18n.t(torReady ? 'home.tor_ready' : 'home.tor_idle');
-    document.querySelector('.rbtn[data-nav="discordView"]').classList.toggle('hot', torReady);
-}
+function paintTor() { if (currentView === 'proxyView') { try { refreshProxy(); } catch (e) {} } }
 ipcRenderer.on('tor-ready', () => { torReady = true; paintTor(); });
 
 // ==========================================
@@ -934,14 +916,10 @@ $('btnOpenSource')?.addEventListener('click', () => shell.openExternal(SOURCE_UR
 // --- UPDATE NOTES ---
 // ==========================================
 const notesOverlay = $('notesOverlay');
-// Closing the notes hands the screen to the support sheet, so the two never
-// stack on top of each other at launch.
-function closeNotes() { notesOverlay.classList.remove('show'); maybeDonate(); }
+function closeNotes() { notesOverlay.classList.remove('show'); }
 $('notesClose').addEventListener('click', closeNotes);
 notesOverlay.addEventListener('click', e => { if (e.target === notesOverlay) closeNotes(); });
 
-// Resolves true when the sheet actually went up — the boot sequence uses that
-// to decide whether the support sheet may open immediately instead.
 async function maybeNotes() {
     let on = true;
     try { on = (await ipcRenderer.invoke('settings-get', 'show_update_notes')) !== false; } catch (e) {}
@@ -967,82 +945,6 @@ async function maybeNotes() {
         return true;
     } catch (e) {}
     return false;
-}
-
-// ==========================================
-// --- SUPPORT / DONATION ---
-// ==========================================
-// The address never lives here. Main owns it (src/main/donate.js) and this file
-// only renders what main hands over, so a renderer-side mistake can't put a
-// wrong address on screen or a renderer-supplied string into shell.openExternal.
-const donateOverlay = $('donateOverlay');
-let donateInfo = null;
-
-async function paintDonate() {
-    if (!donateInfo) {
-        try { donateInfo = await ipcRenderer.invoke('donate-info'); } catch (e) { return; }
-    }
-    if (!donateInfo || !donateInfo.address) return;
-    ['donateAddr', 'donateAddr2'].forEach(id => { const el = $(id); if (el) el.textContent = donateInfo.address; });
-}
-
-// Transient one-line feedback next to the buttons; clears itself so the panel
-// doesn't keep a stale "Copied" sitting there for the rest of the session.
-function donateSay(el, key, bad) {
-    if (!el) return;
-    el.textContent = i18n.t(key);
-    el.classList.toggle('bad', !!bad);
-    clearTimeout(el._t);
-    el._t = setTimeout(() => { el.textContent = ''; el.classList.remove('bad'); }, 2800);
-}
-
-async function donateCopy(said) {
-    let ok = false;
-    try { ok = (await ipcRenderer.invoke('donate-copy')) === true; } catch (e) {}
-    donateSay(said, ok ? 'donate.copied' : 'donate.copy_failed', !ok);
-}
-
-async function donateWallet(said) {
-    let r = null;
-    try { r = await ipcRenderer.invoke('donate-open-wallet'); } catch (e) {}
-    // No wallet registered for bitcoin: is the normal case, not an error worth
-    // shouting about — the address and the QR are still right there.
-    if (!r || !r.ok) donateSay(said, 'donate.no_wallet', true);
-}
-
-function closeDonate() { donateOverlay.classList.remove('show'); }
-$('donateClose').addEventListener('click', closeDonate);
-$('btnDonateLater').addEventListener('click', closeDonate);
-donateOverlay.addEventListener('click', e => { if (e.target === donateOverlay) closeDonate(); });
-$('btnDonateNever').addEventListener('click', async () => {
-    try { await ipcRenderer.invoke('settings-set', 'show_donate', false); } catch (e) {}
-    if ($('donateToggle')) $('donateToggle').checked = false;
-    closeDonate();
-});
-
-$('btnDonateCopy').addEventListener('click', () => donateCopy($('donateSaid')));
-$('btnDonateCopy2').addEventListener('click', () => donateCopy($('donateSaid2')));
-$('btnDonateWallet').addEventListener('click', () => donateWallet($('donateSaid')));
-$('btnDonateWallet2').addEventListener('click', () => donateWallet($('donateSaid2')));
-
-// Launch policy. Asking for money on every single launch is how an app teaches
-// people to close it fast, so: at most once per session, never stacked on the
-// update notes, silenced permanently by "Don't show this again", and quiet for
-// a week after each time it appears.
-const DONATE_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
-let donateAsked = false;
-
-async function maybeDonate() {
-    if (donateAsked) return;
-    donateAsked = true;
-    try {
-        if ((await ipcRenderer.invoke('settings-get', 'show_donate')) === false) return;
-        const last = Number(await ipcRenderer.invoke('settings-get', 'donate_last_shown')) || 0;
-        if (last && Date.now() - last < DONATE_COOLDOWN_MS) return;
-        await ipcRenderer.invoke('settings-set', 'donate_last_shown', Date.now());
-    } catch (e) { return; }
-    await paintDonate();
-    donateOverlay.classList.add('show');
 }
 
 // ==========================================
@@ -1083,16 +985,6 @@ autoUpdateToggle.addEventListener('change', e => ipcRenderer.invoke('settings-se
 const updateNotesToggle = $('updateNotesToggle');
 (async () => { const s = await ipcRenderer.invoke('settings-get', 'show_update_notes'); updateNotesToggle.checked = s === undefined ? true : s === true; })();
 updateNotesToggle.addEventListener('change', e => ipcRenderer.invoke('settings-set', 'show_update_notes', e.target.checked));
-
-const donateToggle = $('donateToggle');
-(async () => { const s = await ipcRenderer.invoke('settings-get', 'show_donate'); donateToggle.checked = s === undefined ? true : s === true; })();
-donateToggle.addEventListener('change', async e => {
-    await ipcRenderer.invoke('settings-set', 'show_donate', e.target.checked);
-    // Turning it back on should mean "ask me next launch", not "wait out the
-    // rest of a cooldown the user has already forgotten about".
-    if (e.target.checked) await ipcRenderer.invoke('settings-set', 'donate_last_shown', 0);
-});
-$('btnOpenDonate').addEventListener('click', () => showView('donateView'));
 
 // --- Manual "check for updates" + background-check badge ---
 // The main process owns the actual version check (updater.js). Here we drive the
@@ -1158,7 +1050,7 @@ if (btnImportConfig) btnImportConfig.addEventListener('click', async () => {
     else backupStatus.textContent = i18n.t('settings.backup_failed');
 });
 
-// After an import, re-pull the visible toggles + AI config so the UI matches the
+// After an import, re-pull the visible toggles so the UI matches the
 // newly-applied settings without a restart. (Launch-only settings still take
 // full effect next launch — the status line tells the user.)
 ipcRenderer.on('config-imported', async () => {
@@ -1168,15 +1060,11 @@ ipcRenderer.on('config-imported', async () => {
         ipcRenderer.send('set-autostart', as); // apply the imported autostart state now
         const au = await ipcRenderer.invoke('settings-get', 'auto_update');       autoUpdateToggle.checked  = au === undefined ? true : au === true;
         const un = await ipcRenderer.invoke('settings-get', 'show_update_notes');  updateNotesToggle.checked = un === undefined ? true : un === true;
-        const dn = await ipcRenderer.invoke('settings-get', 'show_donate');        donateToggle.checked      = dn === undefined ? true : dn === true;
         failoverToggle.checked = (await ipcRenderer.invoke('settings-get', 'dpi_failover')) === true;
         const tr = await ipcRenderer.invoke('settings-get', 'dpi_use_tr_master_list'); trMasterToggle.checked = tr === undefined ? true : tr === true;
     } catch (e) {}
-    try { aiConfig = await ipcRenderer.invoke('ai-config-get'); paintAi(); } catch (e) {}
     try { highlightActiveLang(); } catch (e) {}
 });
-
-$('btnOpenAiSettings').addEventListener('click', () => showView('aiSetupView'));
 
 // ==========================================
 // --- PROXY BRIDGE ---
@@ -1209,7 +1097,7 @@ function openProxy() {
     proxyWired = true;
     $('btnProxyStartTor').addEventListener('click', () => {
         ipcRenderer.send('start-tor');
-        if ($('pxTorSub')) $('pxTorSub').textContent = i18n.t('discord.status_establishing');
+        if ($('pxTorSub')) $('pxTorSub').textContent = 'Starting Tor…';
     });
     $('btnCopySocks').addEventListener('click', () => pxCopy($('pxSocks').textContent, $('pxHttpStatus')));
     $('btnCopyHttp').addEventListener('click', () => pxCopy($('pxHttp').textContent, $('pxHttpStatus')));
@@ -1262,7 +1150,7 @@ async function refreshBridges() {
     paintTransportPick();
     if ($('brLines')) $('brLines').value = s.lines || '';
     paintBridgeAvail(s);
-    if ($('brStatus')) $('brStatus').textContent = s.torRunning ? (s.torReady ? i18n.t('home.tor_ready') : i18n.t('discord.status_establishing')) : i18n.t('home.tor_idle');
+    if ($('brStatus')) $('brStatus').textContent = s.torRunning ? (s.torReady ? i18n.t('home.tor_ready') : 'Starting Tor…') : i18n.t('home.tor_idle');
 }
 async function saveBridges(restart) {
     const cfg = { enabled: $('brEnable').checked, transport: brTransport, lines: $('brLines').value };
@@ -1498,622 +1386,6 @@ ipcRenderer.on('verify-done', (e, r) => {
 });
 
 // ==========================================
-// --- DISCORD ---
-// ==========================================
-let discordInited = false, dEmail = '', dPass = '', dAuto = false, dCreds = null;
-const discordWebview = $('discordWebview'), discordGateway = $('discordGateway');
-
-function initDiscord() {
-    if (discordInited) return;
-    discordInited = true;
-    ipcRenderer.send('start-tor');
-}
-ipcRenderer.on('tor-ready', () => {
-    if (!discordInited) return;
-    $('discordStatus').textContent = i18n.t('discord.status_establishing');
-    ipcRenderer.send('enable-discord-proxy');
-});
-ipcRenderer.on('discord-proxy-success', () => {
-    const s = $('discordStatus');
-    s.textContent = i18n.t('discord.status_active');
-    s.className = 'tag ok';
-    checkCreds();
-});
-
-async function checkCreds() {
-    const legacy = localStorage.getItem('sistem_discord_creds');
-    if (legacy) {
-        try { const p = JSON.parse(legacy); if (p && p.email && p.pass) await ipcRenderer.invoke('creds-save', 'discord', p); } catch (e) {}
-        localStorage.removeItem('sistem_discord_creds');
-    }
-    const res = await ipcRenderer.invoke('creds-load', 'discord');
-    if (res && res.ok && res.data && res.data.email) {
-        dCreds = res.data;
-        $('dSavedEmail').textContent = res.data.email;
-        $('dNewForm').style.display = 'none'; $('dSavedForm').style.display = 'block';
-    } else {
-        dCreds = null;
-        $('dNewForm').style.display = 'block'; $('dSavedForm').style.display = 'none';
-    }
-}
-
-$('dSaveLogin').addEventListener('click', async () => {
-    const email = $('dEmail').value.trim(), pass = $('dPass').value;
-    if (!email || !pass) return;
-    await ipcRenderer.invoke('creds-save', 'discord', { email, pass });
-    dCreds = { email, pass }; dEmail = email; dPass = pass;
-    launchDiscord(true);
-});
-$('dSkip').addEventListener('click', () => launchDiscord(false));
-$('dUseSaved').addEventListener('click', () => {
-    if (!dCreds) { launchDiscord(false); return; }
-    dEmail = dCreds.email; dPass = dCreds.pass;
-    launchDiscord(true);
-});
-$('dSkipSaved').addEventListener('click', () => launchDiscord(false));
-$('dDeleteSaved').addEventListener('click', async () => {
-    await ipcRenderer.invoke('creds-delete', 'discord');
-    dCreds = null; dEmail = ''; dPass = '';
-    checkCreds();
-});
-
-function launchDiscord(inject) {
-    if (!inject) { dEmail = ''; dPass = ''; }
-    $('dNewForm').style.display = 'none'; $('dSavedForm').style.display = 'none';
-    $('dLoader').style.display = 'flex';
-    document.querySelectorAll('#discordView .gate-box .act').forEach(b => b.disabled = true);
-    setTimeout(() => {
-        discordGateway.style.display = 'none';
-        discordWebview.style.display = 'flex';
-        discordWebview.src = 'https://discord.com/login';
-    }, 1200);
-}
-
-discordWebview.addEventListener('did-finish-load', () => {
-    const url = discordWebview.getURL();
-    if (url.includes('login') && dEmail && dPass && !dAuto) {
-        dAuto = true;
-        discordWebview.executeJavaScript(`
-            (function() {
-                let n = 0;
-                const t = setInterval(() => {
-                    n++;
-                    const e = document.querySelector('input[name="email"]');
-                    const p = document.querySelector('input[name="password"]');
-                    const b = document.querySelector('button[type="submit"]');
-                    if (e && p && b) {
-                        clearInterval(t);
-                        function set(el, v) {
-                            const s = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-                            const ps = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), "value").set;
-                            if (s && s !== ps) ps.call(el, v); else s.call(el, v);
-                            el.dispatchEvent(new Event('input', { bubbles: true }));
-                        }
-                        set(e, ${JSON.stringify(dEmail)});
-                        set(p, ${JSON.stringify(dPass)});
-                        setTimeout(() => { b.removeAttribute('disabled'); b.click(); }, 500);
-                    } else if (n > 20) clearInterval(t);
-                }, 500);
-            })();
-        `);
-    }
-});
-
-// ==========================================
-// --- BURNEDWOLF AI ---
-// ==========================================
-let aiConfig = { enabled: false, provider: null, model: null, canAct: true };
-let aiCatalog = [], aiHistory = [], aiBusy = false;
-let activeProvider = null, activeModels = [], modelsLive = false, modelFilter = 'all';
-
-const aiChat = $('aiChat'), aiInput = $('aiInput'), aiSend = $('aiSend');
-
-const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-function md(src) {
-    const lines = esc(src).split('\n');
-    let html = '', list = null;
-    const inline = s => s
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-        .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>');
-    for (const raw of lines) {
-        const line = raw.trim();
-        const ul = line.match(/^[-*•]\s+(.*)$/), ol = line.match(/^(\d+)[.)]\s+(.*)$/);
-        if (ul) { if (list !== 'ul') { if (list) html += `</${list}>`; html += '<ul>'; list = 'ul'; } html += `<li>${inline(ul[1])}</li>`; }
-        else if (ol) { if (list !== 'ol') { if (list) html += `</${list}>`; html += '<ol>'; list = 'ol'; } html += `<li>${inline(ol[2])}</li>`; }
-        else { if (list) { html += `</${list}>`; list = null; } if (line) html += `<p>${inline(line)}</p>`; }
-    }
-    if (list) html += `</${list}>`;
-    return html || `<p>${inline(esc(src))}</p>`;
-}
-
-const IC_ME = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="miter"><path d="M4 20 v-2 a4 4 0 0 1 4-4 h8 a4 4 0 0 1 4 4 v2"></path><path d="M12 4 L15 7 L12 10 L9 7 Z"></path></svg>';
-const IC_AI = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"><path d="M3 12 L7 8 L11 12 L15 8 L19 12"></path><path d="M3 17 L7 13 L11 17 L15 13 L19 17"></path></svg>';
-
-function addMsg(role, text, opts) {
-    const o = opts || {};
-    const w = document.createElement('div');
-    w.className = 'msg ' + (role === 'user' ? 'me' : 'ai');
-    const ic = document.createElement('div');
-    ic.className = 'ic';
-    ic.innerHTML = role === 'user' ? IC_ME : IC_AI;
-    const b = document.createElement('div');
-    b.className = 'bub' + (o.error ? ' err' : '');
-    b.innerHTML = md(text);
-    if (o.performed && o.performed.length) {
-        const box = document.createElement('div');
-        box.className = 'did';
-        for (const p of o.performed) {
-            const r = document.createElement('i');
-            if (!p.ok) r.className = 'no';
-            const nm = document.createElement('b'); nm.textContent = p.tool;
-            const ds = document.createElement('span'); ds.textContent = p.ok ? i18n.t('ai.act_done') : (p.error || i18n.t('ai.act_failed'));
-            r.appendChild(nm); r.appendChild(ds);
-            box.appendChild(r);
-        }
-        b.appendChild(box);
-    }
-    w.appendChild(ic); w.appendChild(b);
-    aiChat.appendChild(w);
-    scrollChat();
-    return w;
-}
-function scrollChat() { aiChat.scrollTop = aiChat.scrollHeight; }
-
-function addLive() {
-    const r = document.createElement('div');
-    r.className = 'msg ai';
-    r.innerHTML = `<div class="ic">${IC_AI}</div><div class="bub"><div class="thinking"><span class="sh"></span><span class="what"></span></div></div>`;
-    aiChat.appendChild(r); scrollChat();
-    return r;
-}
-
-const HINTS = ['ai.s1', 'ai.s2', 'ai.s3', 'ai.s4'];
-function paintHints() {
-    const box = $('aiSuggest');
-    if (!box) return;
-    box.replaceChildren();
-    if (aiHistory.length) return;
-    HINTS.forEach(k => {
-        const b = document.createElement('button');
-        b.className = 'hint';
-        b.textContent = i18n.t(k);
-        b.addEventListener('click', () => { aiInput.value = b.textContent; sendAi(); });
-        box.appendChild(b);
-    });
-}
-
-function greet() {
-    if (aiChat.childElementCount) return;
-    const isp = detectedISP && detectedISP.detected ? detectedISP.ispLabel : null;
-    addMsg('ai', isp ? i18n.t('ai.greet_isp', { isp }) : i18n.t('ai.greet'));
-    paintHints();
-}
-
-async function openAi() {
-    await loadAiConfig();
-    if (!aiConfig.enabled || !aiConfig.provider || !aiConfig.model) showView('aiSetupView');
-    else { showView('aiView'); greet(); }
-}
-
-async function loadAiConfig() {
-    try { aiConfig = await ipcRenderer.invoke('ai-config-get'); } catch (e) {}
-    try { aiCatalog = await ipcRenderer.invoke('ai-catalog'); } catch (e) { aiCatalog = []; }
-    $('aiEnableToggle').checked = !!aiConfig.enabled;
-    $('aiActToggle').checked = aiConfig.canAct !== false;
-    const p = aiCatalog.find(x => x.id === aiConfig.provider);
-    $('aiModelChip').textContent = p && aiConfig.model ? `${p.name} · ${aiConfig.model}` : i18n.t('ai.not_set');
-    paintAi();
-    refreshUsage();
-}
-
-function paintAi() {
-    const p = aiCatalog.find(x => x.id === aiConfig.provider);
-    const ready = aiConfig.enabled && aiConfig.provider && aiConfig.model;
-    $('aiVal').textContent = ready ? (p ? p.name : aiConfig.provider) : i18n.t('ai.not_set');
-    $('aiSub').textContent = ready ? (aiConfig.model || '') : i18n.t('ai.tile_sub');
-    document.querySelector('.rbtn[data-nav="aiView"]').classList.toggle('hot', !!ready);
-}
-
-$('aiEnableToggle').addEventListener('change', async e => { aiConfig = await ipcRenderer.invoke('ai-config-set', { enabled: e.target.checked }); paintAi(); });
-$('aiActToggle').addEventListener('change', async e => { aiConfig = await ipcRenderer.invoke('ai-config-set', { canAct: e.target.checked }); });
-ipcRenderer.on('ai-config-changed', (e, c) => { aiConfig = c; paintAi(); });
-
-function renderProviders() {
-    const box = $('providerGrid');
-    box.replaceChildren();
-    const ordered = aiCatalog.slice().sort((a, b) => Number(!!b.recommended) - Number(!!a.recommended));
-    for (const p of ordered) {
-        const r = document.createElement('button');
-        r.className = 'prov' + (aiConfig.provider === p.id ? ' now' : '');
-        r.innerHTML = `<span class="dot" style="background:${esc(p.accent)}"></span>
-            <span><span class="pn"><span class="nm2"></span><span class="tag ${p.tier === 'paid' ? 'warn' : 'ok'}"></span>${p.recommended ? `<span class="tag on"></span>` : ''}</span><span class="pd"></span></span>
-            <span class="pk"></span>
-            <svg class="go" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5 L16 12 L9 19"></path></svg>`;
-        r.querySelector('.nm2').textContent = p.name;
-        r.querySelectorAll('.tag')[0].textContent = i18n.t('ai.tier_' + p.tier);
-        if (p.recommended) r.querySelectorAll('.tag')[1].textContent = i18n.t('ai.recommended');
-        r.querySelector('.pd').textContent = i18n.t('ai.free.' + p.freeNote);
-        const k = r.querySelector('.pk');
-        k.textContent = p.noKey ? i18n.t('ai.no_key_needed') : (p.hasKey ? i18n.t('ai.key_saved', { k: p.keyHint }) : i18n.t('ai.key_needed'));
-        k.classList.toggle('set', !!(p.hasKey || p.noKey));
-        r.addEventListener('click', () => openProvider(p.id));
-        box.appendChild(r);
-    }
-}
-
-async function openProvider(id) {
-    activeProvider = aiCatalog.find(p => p.id === id);
-    if (!activeProvider) return;
-    const p = activeProvider;
-    $('provTitle').textContent = p.name;
-    const pill = $('provTierPill');
-    pill.textContent = i18n.t('ai.tier_' + p.tier);
-    pill.className = 'tag ' + (p.tier === 'paid' ? 'warn' : 'ok');
-    $('provFreeNote').textContent = i18n.t('ai.free.' + p.freeNote);
-    const q = $('provQuotaNote');
-    q.textContent = p.freeQuota ? i18n.t('ai.quota.' + p.freeQuota) : '';
-    q.style.display = p.freeQuota ? '' : 'none';
-
-    const steps = $('provSteps');
-    steps.replaceChildren();
-    const raw = i18n.t('ai.steps.' + p.id);
-    const items = raw && raw !== 'ai.steps.' + p.id ? String(raw).split('|') : [i18n.t('ai.steps.generic')];
-    for (const s of items) {
-        const row = document.createElement('div');
-        row.className = 'step';
-        row.innerHTML = '<i></i><span></span>';
-        row.querySelector('span').textContent = s;
-        steps.appendChild(row);
-    }
-    $('btnOpenConsole').style.display = p.keysUrl ? '' : 'none';
-    $('btnOpenPricing').style.display = p.pricingUrl ? '' : 'none';
-    $('provKeyPanel').style.display = p.noKey ? 'none' : '';
-    $('provKeyInput').value = ''; $('provKeyInput').type = 'password';
-    $('provCustomEndpoint').style.display = p.custom ? 'block' : 'none';
-    $('provEndpointInput').value = p.custom ? (aiConfig.endpoint || '') : '';
-    const st = $('provKeyState');
-    st.className = 'keystate';
-    st.textContent = p.hasKey ? i18n.t('ai.key_saved', { k: p.keyHint }) : '';
-    $('btnKeyDelete').style.display = p.hasKey ? 'inline' : 'none';
-    modelFilter = 'all'; paintFilter();
-    renderModels(p.models, false);
-    showView('aiProviderView');
-}
-
-function paintFilter() {
-    $('segModelsAll').classList.toggle('on', modelFilter === 'all');
-    $('segModelsFree').classList.toggle('on', modelFilter === 'free');
-}
-$('segModelsAll').addEventListener('click', () => { modelFilter = 'all'; paintFilter(); renderModels(activeModels, modelsLive); });
-$('segModelsFree').addEventListener('click', () => { modelFilter = 'free'; paintFilter(); renderModels(activeModels, modelsLive); });
-
-function usd(n) {
-    const v = Number(n);
-    if (!Number.isFinite(v)) return '—';
-    if (v === 0) return '0';
-    if (v < 0.01) return v.toFixed(4).replace(/0+$/, '');
-    if (v < 1) return v.toFixed(2);
-    return v % 1 === 0 ? String(v) : v.toFixed(2);
-}
-
-function renderModels(models, live) {
-    activeModels = models || [];
-    modelsLive = !!live;
-    const list = $('modelList');
-    list.replaceChildren();
-    const src = $('modelSourcePill');
-    src.textContent = i18n.t(live ? 'ai.list_live' : 'ai.list_bundled');
-    src.className = 'tag' + (live ? ' ok' : '');
-
-    const free = m => m.tier === 'free' || m.tier === 'local';
-    const anyFree = activeModels.some(free);
-    $('segModelsFree').style.display = anyFree ? '' : 'none';
-    if (!anyFree && modelFilter === 'free') { modelFilter = 'all'; paintFilter(); }
-    const shown = modelFilter === 'free' ? activeModels.filter(free) : activeModels;
-
-    if (!shown.length) {
-        const e = document.createElement('div');
-        e.className = 'empty';
-        e.innerHTML = '<p></p>';
-        e.querySelector('p').textContent = i18n.t(activeModels.length ? 'ai.no_free_models' : 'ai.no_models');
-        list.appendChild(e);
-        return;
-    }
-    for (const m of shown) {
-        const row = document.createElement('button');
-        row.className = 'model' + (activeProvider && aiConfig.provider === activeProvider.id && aiConfig.model === m.id ? ' now' : '');
-        const zero = m.price && Number(m.price.in) === 0 && Number(m.price.out) === 0;
-        let price;
-        if (m.tier === 'local') price = `<b>${esc(i18n.t('ai.price_local'))}</b>`;
-        else if (zero) price = `<b>${esc(i18n.t('ai.price_free'))}</b>`;
-        else if (m.tier === 'free' && m.price) price = `<b>${esc(i18n.t('ai.price_free'))}</b><br>${esc(i18n.t('ai.price_after_quota', { i: usd(m.price.in), o: usd(m.price.out) }))}`;
-        else if (m.price) price = `<b>$${usd(m.price.in)}</b> ${esc(i18n.t('ai.per_in'))}<br><b>$${usd(m.price.out)}</b> ${esc(i18n.t('ai.per_out'))}`;
-        else price = esc(i18n.t('ai.price_unknown'));
-
-        row.innerHTML = `<span class="mm"><span class="mn"><span class="nm3"></span>${m.best ? '<span class="tag on"></span>' : ''}${m.tier && m.tier !== 'unknown' ? `<span class="tag ${m.tier === 'paid' ? 'warn' : 'ok'}"></span>` : ''}</span><span class="mi"></span></span><span class="mp">${price}</span>`;
-        row.querySelector('.nm3').textContent = m.label || m.id;
-        const tags = row.querySelectorAll('.tag');
-        let ti = 0;
-        if (m.best) tags[ti++].textContent = i18n.t('ai.best_pick');
-        if (m.tier && m.tier !== 'unknown' && tags[ti]) tags[ti].textContent = i18n.t('ai.tier_' + m.tier);
-        row.querySelector('.mi').textContent = m.ctx ? `${m.id} · ${Math.round(m.ctx / 1000)}K` : m.id;
-        row.addEventListener('click', () => chooseModel(m.id));
-        list.appendChild(row);
-    }
-}
-
-async function chooseModel(id) {
-    if (!activeProvider) return;
-    aiConfig = await ipcRenderer.invoke('ai-config-set', {
-        provider: activeProvider.id, model: id, enabled: true,
-        endpoint: activeProvider.custom ? $('provEndpointInput').value.trim() : aiConfig.endpoint
-    });
-    aiCatalog = await ipcRenderer.invoke('ai-catalog');
-    paintAi();
-    renderModels(activeModels, modelsLive);
-    $('aiEnableToggle').checked = true;
-    const p = aiCatalog.find(x => x.id === aiConfig.provider);
-    $('aiModelChip').textContent = p ? `${p.name} · ${id}` : id;
-    aiChat.replaceChildren(); aiHistory = [];
-    showView('aiView');
-    greet();
-}
-
-$('btnCustomModel').addEventListener('click', () => { const v = $('customModelInput').value.trim(); if (v) chooseModel(v); });
-$('btnKeyReveal').addEventListener('click', () => { const el = $('provKeyInput'); el.type = el.type === 'password' ? 'text' : 'password'; });
-
-$('btnKeySave').addEventListener('click', async () => {
-    if (!activeProvider) return;
-    const key = $('provKeyInput').value.trim();
-    const endpoint = activeProvider.custom ? $('provEndpointInput').value.trim() : '';
-    const st = $('provKeyState');
-    if (!key && !activeProvider.noKey) { st.className = 'keystate bad'; st.textContent = i18n.t('ai.key_empty'); return; }
-    st.className = 'keystate'; st.textContent = i18n.t('ai.testing');
-    const test = await ipcRenderer.invoke('ai-test-key', activeProvider.id, key, endpoint);
-    if (!test.ok) { st.className = 'keystate bad'; st.textContent = i18n.t('ai.key_bad', { e: String(test.error || '').slice(0, 120) }); return; }
-    const saved = await ipcRenderer.invoke('ai-key-save', activeProvider.id, key, endpoint);
-    if (!saved.ok) { st.className = 'keystate bad'; st.textContent = i18n.t('ai.key_store_fail'); return; }
-    st.className = 'keystate ok'; st.textContent = i18n.t('ai.key_ok', { n: test.count });
-    $('provKeyInput').value = '';
-    $('btnKeyDelete').style.display = 'inline';
-    aiCatalog = await ipcRenderer.invoke('ai-catalog');
-    activeProvider = aiCatalog.find(p => p.id === activeProvider.id);
-    loadLive();
-});
-
-$('btnKeyDelete').addEventListener('click', async () => {
-    if (!activeProvider) return;
-    await ipcRenderer.invoke('ai-key-delete', activeProvider.id);
-    aiCatalog = await ipcRenderer.invoke('ai-catalog');
-    activeProvider = aiCatalog.find(p => p.id === activeProvider.id);
-    $('provKeyState').className = 'keystate';
-    $('provKeyState').textContent = i18n.t('ai.key_removed');
-    $('btnKeyDelete').style.display = 'none';
-    paintAi();
-});
-
-async function loadLive() {
-    if (!activeProvider) return;
-    const b = $('btnRefreshModels');
-    b.disabled = true; b.classList.add('busy');
-    const r = await ipcRenderer.invoke('ai-list-models', activeProvider.id, '', activeProvider.custom ? $('provEndpointInput').value.trim() : '');
-    b.disabled = false; b.classList.remove('busy');
-    renderModels(r.models || [], !!r.live);
-}
-$('btnRefreshModels').addEventListener('click', loadLive);
-$('btnOpenConsole').addEventListener('click', () => { if (activeProvider) ipcRenderer.invoke('ai-open-external', activeProvider.keysUrl); });
-$('btnOpenPricing').addEventListener('click', () => { if (activeProvider) ipcRenderer.invoke('ai-open-external', activeProvider.pricingUrl); });
-$('btnBackToProviders').addEventListener('click', () => showView('aiSetupView'));
-$('btnAiSettings').addEventListener('click', () => showView('aiSetupView'));
-$('btnAiLimits').addEventListener('click', () => showView('aiLimitView'));
-if ($('btnAiDiagnose')) $('btnAiDiagnose').addEventListener('click', diagnoseAi);
-$('btnBackFromLimits').addEventListener('click', () => showView(aiConfig.enabled && aiConfig.model ? 'aiView' : 'aiSetupView'));
-$('btnAiAudit').addEventListener('click', () => showView('aiAuditView'));
-$('btnBackFromAudit').addEventListener('click', () => showView('aiSetupView'));
-$('btnAiClear').addEventListener('click', () => { aiChat.replaceChildren(); aiHistory = []; greet(); });
-
-aiInput.addEventListener('input', () => { aiInput.style.height = 'auto'; aiInput.style.height = Math.min(130, aiInput.scrollHeight) + 'px'; });
-aiInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAi(); } });
-aiSend.addEventListener('click', sendAi);
-
-const AI_ERR = {
-    ai_disabled: 'ai.err_disabled', ai_not_configured: 'ai.err_not_configured',
-    ai_no_key: 'ai.err_no_key', ai_no_endpoint: 'ai.err_no_endpoint', ai_unknown_provider: 'ai.err_provider'
-};
-
-// Shared AI turn — used by the text composer and by one-click auto-diagnose.
-async function runAiExchange(userLabel, invoke) {
-    if (aiBusy) return;
-    if (!aiConfig.enabled || !aiConfig.provider || !aiConfig.model) { showView('aiSetupView'); return; }
-    addMsg('user', userLabel);
-    $('aiSuggest').replaceChildren();
-    aiBusy = true; aiSend.disabled = true;
-
-    const live = addLive();
-    const what = live.querySelector('.what');
-    what.textContent = i18n.t('ai.thinking');
-
-    const onProgress = (e, p) => {
-        if (!p) return;
-        if (p.stage === 'tool') what.textContent = i18n.t('ai.running_tool', { t: p.tool });
-        else if (p.stage === 'continuing') what.textContent = i18n.t('ai.applying');
-    };
-    ipcRenderer.on('ai-progress', onProgress);
-
-    let res;
-    try { res = await invoke(); }
-    catch (e) { res = { ok: false, error: 'internal', detail: String(e && e.message || e) }; }
-    ipcRenderer.removeListener('ai-progress', onProgress);
-    live.remove();
-
-    if (res && res.ok) {
-        const body = res.text && res.text.trim() ? res.text : i18n.t('ai.done_no_text');
-        addMsg('ai', body, { performed: res.performed });
-        aiHistory.push({ role: 'user', content: userLabel });
-        aiHistory.push({ role: 'assistant', content: body });
-        if (res.performed && res.performed.some(p => p.mutating && p.ok)) resync();
-        refreshUsage();
-    } else {
-        const k = AI_ERR[res && res.error];
-        addMsg('ai', k ? i18n.t(k) : i18n.t('ai.err_provider_detail', { e: String((res && (res.detail || res.error)) || 'unknown').slice(0, 220) }), { error: true });
-    }
-    aiBusy = false; aiSend.disabled = false; aiInput.focus();
-}
-
-async function sendAi() {
-    if (aiBusy) return;
-    const text = aiInput.value.trim();
-    if (!text) return;
-    if (!aiConfig.enabled || !aiConfig.provider || !aiConfig.model) { showView('aiSetupView'); return; }
-    aiInput.value = ''; aiInput.style.height = 'auto';
-    await runAiExchange(text, () => ipcRenderer.invoke('ai-chat', { message: text, history: aiHistory }));
-}
-
-// One-click auto-diagnose: no typing — main gathers the snapshot and the model
-// analyses (and, with action mode on, fixes) the connection.
-async function diagnoseAi() {
-    if (aiBusy) return;
-    if (!aiConfig.enabled || !aiConfig.provider || !aiConfig.model) { showView('aiSetupView'); return; }
-    await runAiExchange(i18n.t('ai.diagnose_msg'), () => ipcRenderer.invoke('ai-diagnose'));
-}
-
-async function resync() {
-    refreshDns();
-    try {
-        const st = await ipcRenderer.invoke('query-engine-status');
-        if (st && st.zapret) {
-            engineRunning = !!st.zapret.running;
-            engineMode = st.zapret.mode || engineMode;
-            if (engineRunning && !startedAt) startedAt = Date.now();
-            if (!engineRunning) startedAt = null;
-            paintState();
-        }
-    } catch (e) {}
-    try {
-        failoverToggle.checked = (await ipcRenderer.invoke('settings-get', 'dpi_failover')) === true;
-        const tr = await ipcRenderer.invoke('settings-get', 'dpi_use_tr_master_list');
-        trMasterToggle.checked = tr === undefined ? true : tr === true;
-    } catch (e) {}
-    ipcRenderer.send('load-whitelist');
-}
-
-ipcRenderer.on('ai-ui-command', (e, cmd) => {
-    if (!cmd) return;
-    switch (cmd.action) {
-        case 'navigate': {
-            const map = { home: 'homeView', dns: 'dnsView', analysis: 'analysisView', verify: 'verifyView', discord: 'discordView', advanced: 'advancedView', settings: 'settingsView', ai: 'aiView' };
-            if (map[cmd.view]) showView(map[cmd.view]);
-            break;
-        }
-        case 'select-profile':
-            if (cmd.profileId && (profileLabels[cmd.profileId] || cmd.profileId === 'custom')) {
-                profileSelect.value = cmd.profileId; paintProfileName(); paintState();
-            }
-            break;
-        case 'run-analysis': setScanMode(cmd.mode === 'deep' ? 'deep' : 'quick'); showView('analysisView'); startScan(); break;
-        case 'cancel-analysis': ipcRenderer.send('cancel-blockcheck'); break;
-        case 'run-verify': showView('verifyView'); startVerify(); break;
-        case 'refresh-dns': refreshDns(); break;
-        case 'apply-autostart': ipcRenderer.send('set-autostart', !!cmd.value); autoStartToggle.checked = !!cmd.value; break;
-        case 'settings-changed':
-            if (cmd.key === 'dpi_failover') failoverToggle.checked = !!cmd.value;
-            if (cmd.key === 'dpi_use_tr_master_list') trMasterToggle.checked = !!cmd.value;
-            if (cmd.key === 'auto_update') autoUpdateToggle.checked = !!cmd.value;
-            if (cmd.key === 'show_update_notes') updateNotesToggle.checked = !!cmd.value;
-            if (cmd.key === 'show_donate') donateToggle.checked = !!cmd.value;
-            break;
-    }
-});
-
-// --- usage ---
-function refreshUsage() { ipcRenderer.invoke('ai-usage').then(paintUsage).catch(() => {}); }
-ipcRenderer.on('ai-usage-changed', (e, r) => paintUsage(r));
-
-function fmt(n) {
-    n = Number(n) || 0;
-    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
-    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
-    return String(n);
-}
-
-function paintUsage(r) {
-    if (!r) return;
-    const chip = $('aiLimitChip');
-    if (chip) chip.textContent = i18n.t('ai.chip_usage', { n: r.today.requests, t: fmt(r.today.in + r.today.out) });
-    if ($('aiLimitView').hidden) return;
-
-    $('statReq').textContent = r.today.requests;
-    $('statIn').textContent = fmt(r.today.in);
-    $('statOut').textContent = fmt(r.today.out);
-    $('statCost').textContent = r.estimatedCostTotal != null ? ('$' + r.estimatedCostTotal.toFixed(4)) : '—';
-
-    const keys = Object.keys(r.days).sort().slice(-14);
-    const today = new Date().toISOString().slice(0, 10);
-    const day = k => { const d = new Date(k + 'T00:00:00'); return `${d.getDate()}/${d.getMonth() + 1}`; };
-    const series = keys.map(k => ({ key: k, label: day(k), value: r.days[k].requests || 0, today: k === today }));
-    $('chartEmpty').hidden = series.length > 0;
-    if (!usageBars) usageBars = LOOM.bars($('usageChart'));
-    if (usageBars) usageBars.setData(series);
-
-    const panel = $('rateLimitPanel'), rows = $('rateLimitRows');
-    if (r.rateLimit) {
-        rows.replaceChildren();
-        const map = { requestsRemaining: 'ai.rl_req_left', tokensRemaining: 'ai.rl_tok_left', requestsLimit: 'ai.rl_req_limit', tokensLimit: 'ai.rl_tok_limit', reset: 'ai.rl_reset' };
-        for (const [k, lbl] of Object.entries(map)) {
-            if (r.rateLimit[k] == null) continue;
-            const row = document.createElement('div');
-            row.className = 'row';
-            row.innerHTML = '<span class="rt"><h4></h4></span><span class="num tiny"></span>';
-            row.querySelector('h4').textContent = i18n.t(lbl);
-            row.querySelector('.num').textContent = String(r.rateLimit[k]);
-            rows.appendChild(row);
-        }
-        panel.style.display = rows.childElementCount ? '' : 'none';
-    } else panel.style.display = 'none';
-}
-
-$('btnResetUsage').addEventListener('click', async () => paintUsage(await ipcRenderer.invoke('ai-usage-reset')));
-
-async function renderAudit() {
-    const res = await ipcRenderer.invoke('ai-context-preview');
-    const c = res.context;
-    const list = $('ctxList');
-    list.replaceChildren();
-    const rows = [
-        ['app', `${c.app.name} v${c.app.version}`],
-        ['system', `Windows ${c.system.osRelease} · ${c.system.arch} · ${c.system.cores} cores · ${c.system.memoryGb} GB`],
-        ['locale', c.system.locale],
-        ['isp', c.network.isp.detected === false ? '—' : `${c.network.isp.label} (AS${c.network.isp.asn}) ${c.network.isp.country || ''} ${c.network.isp.city || ''}`],
-        ['public ip', c.network.isp.publicIp || '—'],
-        ['dns', `DoH ${c.network.dns.encryptedDnsActive ? 'on' : 'off'} · ${c.network.dns.lastPreflight ? c.network.dns.lastPreflight.state : '—'}`],
-        ['dpi engine', c.engine.dpi.running ? `running · ${c.engine.dpi.activeProfile}` : 'stopped'],
-        ['tor', c.engine.tor.ready ? `ready :${c.engine.tor.port}` : 'not started'],
-        ['profiles', `${c.profiles.total}`],
-        ['settings', JSON.stringify(c.settings)]
-    ];
-    for (const [k, v] of rows) {
-        const it = document.createElement('div');
-        it.className = 'ctxr';
-        it.innerHTML = '<span class="k"></span><span class="v"></span>';
-        it.querySelector('.k').textContent = k;
-        it.querySelector('.v').textContent = v == null ? '—' : String(v);
-        list.appendChild(it);
-    }
-    const tools = $('toolList');
-    tools.replaceChildren();
-    for (const t of res.tools) {
-        const it = document.createElement('div');
-        it.className = 'ctxr';
-        it.innerHTML = '<span class="k"></span><span class="v"></span>';
-        it.querySelector('.k').textContent = t.name;
-        it.querySelector('.v').textContent = (t.mutating ? '± ' : '· ') + t.description;
-        tools.appendChild(it);
-    }
-}
-
-// ==========================================
 // --- STARTUP ---
 // ==========================================
 (async () => {
@@ -2140,17 +1412,8 @@ async function renderAudit() {
     } catch (e) {}
     if (engineMode && (profileLabels[engineMode] || engineMode === 'custom')) profileSelect.value = engineMode;
     paintProfileName();
-    await loadAiConfig();
     finishBoot();
     detectISP();
     refreshDns();
-    // Notes first; the support sheet follows when they close, or opens straight
-    // away when there were none to show.
-    maybeNotes().then(shown => { if (!shown) maybeDonate(); });
-    try {
-        if (await ipcRenderer.invoke('settings-get', 'ai_open_on_first_run') === true) {
-            await ipcRenderer.invoke('settings-set', 'ai_open_on_first_run', false);
-            setTimeout(() => showView('aiSetupView'), 800);
-        }
-    } catch (e) {}
+    maybeNotes();
 })();

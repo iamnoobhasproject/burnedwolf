@@ -4,10 +4,8 @@
 // Lets the user back up, restore and share their setup as a single JSON file.
 //
 // SECURITY: a backup contains ONLY non-secret preferences (settings.json) plus
-// the DPI whitelist. API keys live encrypted in ai_keys.bin and Discord
-// credentials in the OS credential store — neither is in settings.json, so they
-// are never in a backup by construction. A key-name filter (SENSITIVE) is kept
-// as defence in depth against a future setting that stores something sensitive.
+// the DPI whitelist. A key-name filter (SENSITIVE) is kept as defence in depth
+// against any future setting that stores something sensitive.
 const { ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');

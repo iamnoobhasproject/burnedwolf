@@ -3,9 +3,7 @@
 // that cares (DPI panel, spotlight, titlebar) picks them up.
 const { BrowserWindow } = require('electron');
 
-// Optional observers. BurnedWolf AI subscribes here so it can answer "what just
-// happened?" from the same event stream the windows see, without any module
-// having to know the AI exists.
+// Optional observers can subscribe to the same renderer event stream.
 const taps = new Set();
 
 function broadcastToAll(channel, ...args) {
