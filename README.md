@@ -23,6 +23,8 @@ BurnedWolf is a Windows desktop utility that brings several network tools into o
 
 The project is designed around a simple idea: common network fixes should be easy to turn on, inspect, undo, and repair without manually juggling scripts and command-line tools.
 
+Privacy by design: BurnedWolf does not require an account and does not collect usage telemetry, connection history, device identifiers, or user activity. Updates are optional. Because of this design, we intentionally do not maintain active-user statistics.
+
 > **Important:** BurnedWolf changes system/network state and therefore runs with administrator privileges. Only install builds from the official project links and review the source if you want to understand exactly what a feature changes.
 
 ## Highlights
