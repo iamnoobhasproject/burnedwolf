@@ -1,6 +1,6 @@
 # Security Policy
 
-BurnedWolf is a privileged Windows network utility. Security reports are taken seriously, especially issues involving command execution, update integrity, privilege boundaries, credential handling, IPC, or network-state restoration.
+BurnedWolf is a privileged Windows network utility. Security reports are taken seriously, especially issues involving command execution, update integrity, privilege boundaries, credential handling, IPC, network-state restoration, or Core/runtime migration.
 
 ## Supported versions
 
@@ -12,14 +12,14 @@ BurnedWolf is a privileged Windows network utility. Security reports are taken s
 
 ## Reporting a vulnerability
 
-Please **do not publish a working exploit, private credential, or sensitive vulnerability details in a public issue**.
+Please **do not publish a working exploit, private credential, secret update manifest value, or sensitive vulnerability details in a public issue**.
 
 Preferred reporting path:
 
 1. Use GitHub's private security-advisory/reporting feature for this repository when available.
 2. If private reporting is unavailable, contact the maintainer through the GitHub profile **@iamnoobhasproject** and ask for a private channel before sharing sensitive details.
 
-Include the affected version, affected component, reproduction conditions, security impact, and the minimum proof needed to understand the issue.
+Include the affected BurnedWolf version, Electron/Core version, affected component, reproduction conditions, security impact, and the minimum proof needed to understand the issue.
 
 ## Sensitive information
 
@@ -31,6 +31,7 @@ Never include any of the following in public reports:
 - private server secrets
 - personally identifying logs
 - private IP/service credentials
+- unpublished update manifests or release secrets
 
 Redact them before attaching screenshots or logs.
 
@@ -40,4 +41,16 @@ BurnedWolf intentionally requests administrator privileges because some features
 
 ## Updates and repair bundles
 
-Update and integrity-repair infrastructure is security-sensitive. Reports involving manifest tampering, update replacement, path traversal, arbitrary file write, or repair-bundle validation should be treated as high priority.
+BurnedWolf has separate application and Core/runtime update paths. Both are security-sensitive.
+
+High-priority reports include issues involving:
+
+- manifest tampering or downgrade/bypass behaviour;
+- incompatible `app.asar` delivery to an older Electron runtime;
+- Core installer replacement or SHA-256 verification bypass;
+- unsafe `electron-updater`/NSIS release handling;
+- path traversal or arbitrary file writes during application updates or integrity repair;
+- repair-bundle validation failures;
+- IPC handlers that allow untrusted renderer content to perform privileged actions.
+
+The legacy-to-Core migration verifies the downloaded Core installer against the SHA-256 value supplied by the Core manifest before launching it. A bypass of that verification should be treated as high severity.

@@ -2,7 +2,37 @@
 
 Notable BurnedWolf changes are recorded here.
 
-The project currently uses `MAJOR.MINOR.PATCH` version numbers. Dates below document the public 4.x development line.
+The project uses `MAJOR.MINOR.PATCH` version numbers. Dates below document the maintained 4.x development line.
+
+## [4.7.0] - 2026-09-11
+
+### Added
+- Full Core/Electron update channel, separate from lightweight application updates.
+- `electron-updater` integration for modern NSIS Core releases.
+- Core update manifest support with minimum bridge version and SHA-256 metadata.
+- Electron 44 source/release preflight tooling and migration checks.
+- Dedicated v2 application update channel (`version-v2.json` + `app-v2.zip`).
+
+### Changed
+- Updated the desktop runtime to Electron 44.3.0.
+- Full runtime updates and lightweight `app.asar` updates now have independent release paths.
+- Renderer clipboard access is routed through the main-process IPC bridge for Electron 44 compatibility.
+- Core update networking uses the modern Electron/Chromium-compatible request path.
+
+### Security
+- Legacy-to-Core migration verifies the downloaded NSIS installer against the SHA-256 value in the Core manifest before launching it.
+- The original legacy app-update channel remains frozen to prevent incompatible `app.asar` packages from reaching untouched Electron-26 installations.
+
+## [4.6.6] - 2026-09-11
+
+### Added
+- Final Electron-26 migration bridge for the Electron 44 Core transition.
+- Separate Core update status/check/download/install flow in the updater UI.
+- Bridge-side compatibility checks so a user cannot receive an application package that requires a newer runtime.
+
+### Changed
+- Legacy `version.json` + `update.zip` is treated as a frozen bridge channel.
+- New application patches use the v2 channel after the bridge has been installed.
 
 ## [4.6.0] - 2026-09-09
 
@@ -68,4 +98,4 @@ The project currently uses `MAJOR.MINOR.PATCH` version numbers. Dates below docu
 
 ## Legacy
 
-The previous 3.x BurnedWolf line is considered legacy. The current WhyScripts-branded application is the maintained 4.x line.
+The previous 3.x BurnedWolf line is considered legacy. The maintained WhyScripts-branded application is the 4.x line.

@@ -9,7 +9,7 @@ Built and maintained under **[whyscripts.com](https://whyscripts.com/)**.
 
 [![Version](https://img.shields.io/github/package-json/v/iamnoobhasproject/burnedwolf?filename=package.json&style=flat-square)](package.json)
 [![Platform](https://img.shields.io/badge/platform-Windows-111111?style=flat-square&logo=windows11&logoColor=white)](#requirements)
-[![Electron](https://img.shields.io/badge/Electron-26-111111?style=flat-square&logo=electron&logoColor=white)](package.json)
+[![Electron](https://img.shields.io/badge/Electron-44.3.0-111111?style=flat-square&logo=electron&logoColor=white)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 [Website](https://burnedwolf.whyscripts.com/) · [Report a bug](https://github.com/iamnoobhasproject/burnedwolf/issues) · [WhyScripts](https://whyscripts.com/)
@@ -21,9 +21,9 @@ Built and maintained under **[whyscripts.com](https://whyscripts.com/)**.
 
 BurnedWolf is a Windows desktop utility that brings several network tools into one interface. It can manage DPI-bypass profiles, encrypted DNS, network analysis, file-integrity repair, Tor helpers, and the integrated BurnedCord desktop voice client.
 
-The project is designed around a simple idea: common network fixes should be easy to turn on, inspect, undo, and repair without manually juggling scripts and command-line tools.
+The project is designed around a simple idea: common network fixes should be easy to turn on, inspect, undo, repair, and update without manually juggling scripts and command-line tools.
 
-Privacy by design: BurnedWolf does not require an account and does not collect usage telemetry, connection history, device identifiers, or user activity. Updates are optional. Because of this design, we intentionally do not maintain active-user statistics.
+**Privacy by design:** BurnedWolf does not require an account for its core network features and does not collect usage telemetry, connection history, device identifiers, or user activity. Updates are optional. Because of this design, we intentionally do not maintain active-user statistics.
 
 > **Important:** BurnedWolf changes system/network state and therefore runs with administrator privileges. Only install builds from the official project links and review the source if you want to understand exactly what a feature changes.
 
@@ -35,12 +35,12 @@ Privacy by design: BurnedWolf does not require an account and does not collect u
 | **ISP-aware profiles** | Detects the active ISP and can recommend an appropriate protection profile. |
 | **Encrypted DNS** | Runs a local encrypted DNS resolver and can use providers such as Cloudflare or Quad9. |
 | **Crash-safe DNS restore** | Saves the original DNS configuration and repairs stale loopback DNS state after an abnormal shutdown. |
-| **Network analysis** | Tests profiles against real services and ranks the results before applying the best option. |
+| **Network analysis** | Tests profiles against real services and ranks results before applying the best option. |
 | **Custom profiles** | Create, clone, import, export, and manage custom DPI profiles. |
 | **Integrity repair** | Compares bundled runtime files with the official repair bundle and restores missing/corrupt files. |
 | **Tor tools** | Manages the bundled Tor process and supports bridge/pluggable-transport configuration. |
-| **BurnedCord** | Separate desktop voice window with camera/screen sharing integration and global Windows push-to-talk support. |
-| **Updater** | Checks the dedicated WhyScripts update channel and applies application updates without replacing the full installation. |
+| **BurnedCord** | Separate desktop voice window with camera/screen sharing, system-audio support, native clipboard integration, and Windows-global push-to-talk. |
+| **Dual update system** | Lightweight app updates are separate from full Electron/Core runtime updates so older installations can migrate safely. |
 
 ## BurnedCord
 
@@ -72,7 +72,7 @@ The installer is built as `BurnedWolf-Setup.exe` and requests administrator priv
 ```bash
 git clone https://github.com/iamnoobhasproject/burnedwolf.git
 cd burnedwolf
-npm ci
+npm install
 npm start
 ```
 
@@ -82,19 +82,22 @@ For full packaged functionality, the runtime binary directories expected by the 
 
 ```text
 burnedwolf/
-├─ main.js                 # Small Electron entry shim
+├─ main.js                 # Electron entry shim
 ├─ src/main/               # Main-process modules
 │  ├─ zapret/              # DPI engine, profiles, hostlists, payloads, blockcheck
 │  ├─ ai/                  # Optional AI integration helpers
 │  ├─ dns.js               # DNS + dnscrypt-proxy lifecycle and recovery
 │  ├─ tor.js               # Tor lifecycle
 │  ├─ burnedcord.js        # BurnedCord desktop shell / native bridge
-│  ├─ updater.js           # Update pipeline
+│  ├─ updater.js           # Lightweight app.asar update pipeline
+│  ├─ coreUpdate.js        # Full Electron/Core runtime update pipeline
+│  ├─ distribution.js      # Central public distribution/update endpoints
 │  ├─ verify.js            # Integrity verification / repair
 │  └─ windows.js           # Windows, tray, IPC
 ├─ renderer/               # Main BurnedWolf interface
 ├─ i18n/                   # Localized UI strings
 ├─ brand/                  # WhyScripts/BurnedWolf brand assets
+├─ tools/                  # Build/update/migration checks
 └─ package.json            # Electron + electron-builder configuration
 ```
 
@@ -112,42 +115,72 @@ Network utilities can leave the system in a bad state if they are terminated at 
 
 If something goes wrong, read [Troubleshooting](docs/TROUBLESHOOTING.md) before manually changing system settings.
 
+## Update architecture
+
+BurnedWolf uses two independent update channels.
+
+### Application updates
+
+Routine code/UI fixes can be delivered as a lightweight `app.asar` package without replacing the full installation. The maintained v2 application channel uses `version-v2.json` + `app-v2.zip`.
+
+The original `version.json` + `update.zip` channel is intentionally frozen as the legacy Electron-26 bridge channel. This prevents an untouched old installation from receiving an `app.asar` that requires a newer Electron runtime.
+
+### Core / Electron updates
+
+Changes that require a new Electron/Chromium/Node runtime are delivered as a full NSIS Core update. The Core manifest is separate (`core-version.json`) and can enforce a minimum bridge version before the update is offered.
+
+During migration from the legacy Electron 26 installation, the bridge downloads the full installer, verifies its SHA-256 value from the Core manifest, and launches the normal installer. Once BurnedWolf is on the modern Core build, full runtime releases use `electron-updater` / NSIS while lightweight application updates remain separate.
+
+This split is deliberate: a new `app.asar` is never supposed to strand a user on an incompatible Electron runtime.
+
 ## Project history
 
-BurnedWolf has been actively developed through approximately 370 development
-iterations and updates. Earlier versions of the project were hosted in
-repositories that are no longer available, so the commit history of this
-repository does not represent the full development history of BurnedWolf.
+BurnedWolf has been actively developed through hundreds of development iterations and updates. Earlier versions of the project were hosted in repositories that are no longer available, so the commit history of this repository does not represent the full development history of BurnedWolf.
 
 The current repository is the maintained public source going forward.
 
-## Updates
-
-Public distribution endpoints are centralized in `src/main/distribution.js`. The current application checks the WhyScripts update channel for a newer semantic version and downloads the corresponding application update package.
-
-Runtime integrity repair is intentionally separate from application updates. Large repair assets can be hosted as GitHub Release assets while the update manifest remains lightweight.
-
 ## Development
 
-Useful commands:
+Useful commands for the current Electron 44 source line:
 
 ```bash
-npm ci
+npm install
 npm start
 ```
 
-To build a Windows installer:
+Run the source preflight/test helper before building a Core release:
 
-```bash
-npm run dist
+```bat
+TEST_CORE44_SOURCE.bat
 ```
 
-**Do not run the distribution command on uncommitted source without reading the build guide first.** The current `dist` script runs the JavaScript obfuscator before `electron-builder`, and the obfuscation step targets the working tree.
+Build a Windows NSIS Core installer:
+
+```bash
+npm run dist:core
+```
+
+Build the lightweight v2 application-update package:
+
+```bash
+npm run pack:app-v2
+```
+
+The production dependency audit should remain clean:
+
+```bash
+npm audit --omit=dev
+```
+
+Do **not** use `npm audit fix --force` as a release step. A forced dependency rewrite can change tested build/runtime versions.
+
+If you use the obfuscated distribution command, build from a clean/disposable working copy and verify `git status` before and after building.
 
 See:
 
 - [Building from source](docs/BUILDING.md)
 - [Architecture](docs/ARCHITECTURE.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Release notes](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
@@ -156,7 +189,7 @@ See:
 
 Bug reports and focused pull requests are welcome. For larger changes, open an issue first so the approach can be discussed before a large patch is written.
 
-Please keep changes scoped, avoid committing secrets or generated runtime bundles, and preserve cleanup/recovery behaviour when touching DNS, DPI, Tor, updater, or Electron lifecycle code.
+Please keep changes scoped, avoid committing secrets or generated runtime bundles, and preserve cleanup/recovery behaviour when touching DNS, DPI, Tor, updater, Core migration, or Electron lifecycle code.
 
 ## Third-party components
 
@@ -168,7 +201,7 @@ Notable components include:
 - **dnscrypt-proxy** — ISC License
 - **WinDivert** — LGPLv3 or GPLv2, at the recipient's choice
 - **Tor** — distributed under the Tor Project's applicable license terms
-- **Electron and npm dependencies** — subject to their respective upstream licenses
+- **Electron, electron-updater and npm dependencies** — subject to their respective upstream licenses
 
 See [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and the license files shipped with third-party runtime components for details.
 
