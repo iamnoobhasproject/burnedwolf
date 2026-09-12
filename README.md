@@ -147,13 +147,6 @@ Useful commands for the current Electron 44 source line:
 npm install
 npm start
 ```
-
-Run the source preflight/test helper before building a Core release:
-
-```bat
-TEST_CORE44_SOURCE.bat
-```
-
 Build a Windows NSIS Core installer:
 
 ```bash
